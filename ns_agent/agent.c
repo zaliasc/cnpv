@@ -1,18 +1,20 @@
-#define _GNU_SOURCE
+// #define _GNU_SOURCE
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <dlfcn.h>
-#include <errno.h>
-#include <pthread.h>
-#include <unistd.h>
-#include <stdbool.h>
-#include <errno.h>
-#include <stdarg.h>
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <sys/types.h>
+// #include <dlfcn.h>
+// #include <errno.h>
+// #include <pthread.h>
+// #include <unistd.h>
+// #include <stdbool.h>
+// #include <errno.h>
+// #include <stdarg.h>
 
-#include "log.h"
-#include "types.h"
+// #include "log.h"
+// #include "types.h"
+
+#include "agent.h"
 
 #define USE_GLOBAL_LOCK 1
 
@@ -40,14 +42,7 @@ static pthread_mutex_t giant_lock = PTHREAD_MUTEX_INITIALIZER;
 #define GLOBAL_UNLOCK do {} while (0)
 #endif
 
-typedef int (*f_open)(int domain, int type, int protocol);
-
-struct open_calls
-{
-  int (*open_call)(const char *pathname, int flags, ...);
-};
-
-static struct open_calls real_open;
+struct open_calls real_open;
 
 char * config_path;
 
@@ -55,9 +50,7 @@ static int thread_num;
 
 static pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
 
-extern bool check_permission();
-
-void getenv_options(void)
+static void getenv_options()
 {
   config_path = getenv("CNPV_PATH");
   const char* thread_num_p = getenv("CNPV_THREAD");
@@ -69,7 +62,7 @@ void getenv_options(void)
   return;
 }
 
-static void init_preload(void)
+static void init_preload()
 {
   static int init;
   // quick check without lock
@@ -82,15 +75,33 @@ static void init_preload(void)
       goto out;
   }
 
-  real_open.open_call = dlsym(RTLD_NEXT, "open");
+  // real_open.open_call = dlsym(RTLD_NEXT, "open");
+  real_open.open_call = open;
+
   getenv_options();
+  config_init();
   init = 1;
 
 out:
   pthread_mutex_unlock(&mut);
 }
 
-int open(const char *path, int oflag, ...) {
+static int handle_request(void * data) {
+  log_info("handle!");
+  struct open_thread_args * args = (struct open_thread_args *)data;
+  if (check_permission(args->pathname) == true) {
+    if (args->mode == 0)
+      return real_open.open_call(args->pathname, args->flags);
+    else
+      return real_open.open_call(args->pathname, args->flags, args->mode);
+  }
+  else {
+    errno = 134;
+    return -1;
+  }
+}
+
+int open1(const char *path, int oflag, ...) {
   init_preload();
   struct open_thread_args data;
   data.pathname = path;
@@ -103,19 +114,4 @@ int open(const char *path, int oflag, ...) {
   else
     data.mode = 0;
   return handle_request(&data);
-}
-
-int handle_request(void * data) {
-  log_info("handle!");
-  if (check_permission() == true) {
-    struct open_thread_args * args = (struct open_thread_args *)data;
-    if (args->mode == 0)
-      return real_open.open_call(args->pathname, args->flags);
-    else
-      return real_open.open_call(args->pathname, args->flags, args->mode);
-  }
-  else {
-    errno = 134;
-    return -1;
-  }
 }
