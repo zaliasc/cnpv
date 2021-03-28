@@ -1,4 +1,11 @@
 {
-  "PATH" : "/home/zhuzhicheng/project/glibc/version.h",
-  "AUTHORITY" : "r"
+  "json":[
+    {"PATH": "/home/zhuzhicheng/project/glibc/version.h", "AUTHORITY": "r"},
+    {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/check.h", "AUTHORITY": "w"},
+    {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/check1.h", "AUTHORITY": "w"}
+  ],
+  "json1":[
+    {"PATH": "/home/zhuzhicheng/project/glibc/version.h", "AUTHORITY": "r"},
+    {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/check.h", "AUTHORITY": "w"}
+  ]
 }

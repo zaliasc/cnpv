@@ -15,9 +15,9 @@ Container network permission virtualization
 
 #### 使用说明
 
-1.  xxxx
+1.  CNPV_THREAD=100 CNPV_PATH=/home/zhuzhicheng/project/cnpv/ns_agent/config.json ./a.out 
 2.  xxxx
-3.  xxxx
+3.  xxxx_
 
 #### 参与贡献
 
