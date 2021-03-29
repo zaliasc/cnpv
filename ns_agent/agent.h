@@ -1,7 +1,9 @@
 #ifndef AGENT_H
 #define AGENT_H
 
+#ifndef _GNU_SOURCE 
 #define _GNU_SOURCE
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,7 +21,7 @@
 #include "log.h"
 #include "types.h"
 
-int open1(const char *path, int oflag, ...);
+int open(const char *path, int oflag, ...);
 
 static int handle_request(void * data);
 

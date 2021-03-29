@@ -1,19 +1,3 @@
-// #define _GNU_SOURCE
-
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <sys/types.h>
-// #include <dlfcn.h>
-// #include <errno.h>
-// #include <pthread.h>
-// #include <unistd.h>
-// #include <stdbool.h>
-// #include <errno.h>
-// #include <stdarg.h>
-
-// #include "log.h"
-// #include "types.h"
-
 #include "agent.h"
 
 #define USE_GLOBAL_LOCK 1
@@ -75,11 +59,11 @@ static void init_preload()
       goto out;
   }
 
-  // real_open.open_call = dlsym(RTLD_NEXT, "open");
-  real_open.open_call = open;
+  real_open.open_call = dlsym(RTLD_NEXT, "open");
+  // real_open.open_call = open;
 
   getenv_options();
-  config_init();
+  config_init();                                                                                                          
   init = 1;
 
 out:
@@ -101,7 +85,7 @@ static int handle_request(void * data) {
   }
 }
 
-int open1(const char *path, int oflag, ...) {
+int open(const char *path, int oflag, ...) {
   init_preload();
   struct open_thread_args data;
   data.pathname = path;

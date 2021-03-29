@@ -1,67 +1,60 @@
-#include <unistd.h>
+/* vim: set et ts=4
+ *
+ * Copyright (C) 2015 Mirko Pasqualetti  All rights reserved.
+ * https://github.com/udp/json-parser
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
+
 #include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include <errno.h>
 #include <string.h>
-#include <sys/stat.h>
-// #include <fcntl.h>
 
 #include "log.h"
-#include "types.h"
+
 #include "json.h"
-#include "hashmap.h"
 
-extern struct open_calls real_open;
 extern char *program_invocation_short_name;
-extern char * config_path;
-
-// hashmap
-struct hashmap *map;
-
-int user_compare(const void *a, const void *b, void *udata) {
-    const struct user *ua = a;
-    const struct user *ub = b;
-    return strcmp(ua->pathname, ub->pathname);
-}
-
-bool user_iter(const void *item, void *udata) {
-    const struct user *user = item;
-    printf("%s (age=%d)\n", user->pathname, user->permission);
-    return true;
-}
-
-uint64_t user_hash(const void *item, uint64_t seed0, uint64_t seed1) {
-    const struct user *user = item;
-    return hashmap_sip(user->pathname, strlen(user->pathname), seed0, seed1);
-}
-
-
-// config
-static int get_mode_value(const char * s) {
-  int ret = 0;
-  if (strstr(s,"R") || strstr(s,"r")) ret |= O_READ;
-  if (strstr(s,"W") || strstr(s,"w")) ret |= O_WRITE;
-  if (strstr(s,"X") || strstr(s,"x")) ret |= O_EXEC;
-  return ret;
-}
 
 static void process_pair(json_value *pair) {
   if (pair->type != json_object) {
     log_err("parse pair failed");
     exit(-1); 
   }
-  
-  struct user tmp = {.pathname = {0}};
 
   for (int i = 0; i < pair->u.array.length; i++) {
     if (!strcmp(pair->u.object.values[i].name, "PATH")) {
-      strncpy(tmp.pathname, pair->u.object.values[i].value->u.string.ptr, MAX_PATH -1);
+      log_info("1111");
     }
     else if (!strcmp(pair->u.object.values[i].name, "AUTHORITY")) {
-      tmp.permission = get_mode_value(pair->u.object.values[i].value->u.string.ptr);
+      log_info("2222");
     }
   }
-
-  hashmap_set(map, &tmp);
 }
 
 static void process_array(json_value *array) {
@@ -91,9 +84,10 @@ static void process_root(json_value *root) {
 }
 
 
-void config_init() {
-  log_info("config_init()");
+char config_path[] = "/home/zhuzhicheng/project/cnpv/ns_agent/config.json";
 
+void config_init()
+{
   int fd;
   struct stat filestatus;
   int file_size;
@@ -115,7 +109,7 @@ void config_init() {
     exit(-1);
   }
 
-  fd = real_open.open_call(config_path, O_RDONLY);
+  fd = open(config_path, O_RDONLY);
   if (fd == 0)
   {
     log_err("Unable to open %s", config_path);
@@ -143,16 +137,12 @@ void config_init() {
     free(file_contents);
     exit(1);
   }
-
-  map = hashmap_new(sizeof(struct user), 0, 0, 0, 
-                    user_hash, user_compare, NULL); 
-
   process_root(value);
-  
-  log_info("hash map count : %d", (int)hashmap_count(map));
-
   json_value_free(value);
   free(file_contents);
+}
 
-  return;
+int main() {
+  config_init();
+  return 0;
 }
