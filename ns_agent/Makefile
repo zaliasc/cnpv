@@ -2,10 +2,11 @@ cc = gcc
 obj = agent.o check.o config.o hashmap.o json.o
 INC=-I include/
 CFLAGS := -g -O3 -Wall -fPIC
-CFLAGS_AGENT := -g -shared -ldl -lm
+CFLAGS_AGENT := -g -shared
+LD_FLAG := -ldl -lm
 
 all : $(obj)
-	$(cc) $(CFLAGS_AGENT) -o agent.so $(obj)
+	$(cc) $(CFLAGS_AGENT) -o agent.so $(obj) $(LD_FLAG)
 	rm -rf $(obj)
 
 agent.o : agent.c
