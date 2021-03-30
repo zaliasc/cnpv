@@ -40,7 +40,7 @@ static int get_mode_value(const char * s) {
   int ret = 0;
   if (strstr(s,"R") || strstr(s,"r")) ret |= O_READ;
   if (strstr(s,"W") || strstr(s,"w")) ret |= O_WRITE;
-  if (strstr(s,"X") || strstr(s,"x")) ret |= O_EXEC;
+  // if (strstr(s,"X") || strstr(s,"x")) ret |= O_EXEC;
   return ret;
 }
 
@@ -131,7 +131,7 @@ void config_init() {
   }
   close(fd);
 
-  printf("%s\n", file_contents);
+  // printf("%s\n", file_contents);
 
   json = (json_char *)file_contents;
 
@@ -153,6 +153,8 @@ void config_init() {
 
   json_value_free(value);
   free(file_contents);
+
+  log_info("config_init() finish");
 
   return;
 }

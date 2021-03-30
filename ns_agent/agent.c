@@ -30,19 +30,29 @@ struct open_calls real_open;
 
 char * config_path;
 
-static int thread_num;
+// static int thread_num;
+
+// tpool_t *pool;
 
 static pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
+
+// static void thread_init(int thread_num) {
+//   if (create_tpool(&pool, thread_num) != 0) {
+//     log_err("create tpool failed!\n");
+//     exit(-1);
+//   }
+//   log_info("create tpool success! thread_num = %d", thread_num);
+// }
 
 static void getenv_options()
 {
   config_path = getenv("CNPV_PATH");
-  const char* thread_num_p = getenv("CNPV_THREAD");
-  if (!config_path || !thread_num_p) {
-    log_err("please check env: CNPV_PATH, CNPV_THREAD");
+  // const char* thread_num_p = getenv("CNPV_THREAD");
+  if (!config_path) {
+    log_err("please check env: CNPV_PATH");
     exit(-1);
   }
-  thread_num = atoi(thread_num_p);
+  // thread_num = atoi(thread_num_p);
   return;
 }
 
@@ -63,7 +73,8 @@ static void init_preload()
   // real_open.open_call = open;
 
   getenv_options();
-  config_init();                                                                                                          
+  config_init();
+  // thread_init(thread_num);
   init = 1;
 
 out:
@@ -73,7 +84,7 @@ out:
 static int handle_request(void * data) {
   log_info("handle!");
   struct open_thread_args * args = (struct open_thread_args *)data;
-  if (check_permission(args->pathname) == true) {
+  if (check_permission(args->pathname, args->flags) == true) {
     if (args->mode == 0)
       return real_open.open_call(args->pathname, args->flags);
     else
@@ -87,9 +98,7 @@ static int handle_request(void * data) {
 
 int open(const char *path, int oflag, ...) {
   init_preload();
-  struct open_thread_args data;
-  data.pathname = path;
-  data.flags = oflag;
+  struct open_thread_args data = {.pathname = path, .flags = oflag};
   if(oflag & O_CREAT) {
     va_list v;
     va_start(v, oflag);
@@ -97,5 +106,8 @@ int open(const char *path, int oflag, ...) {
   }
   else
     data.mode = 0;
+
+  // add_task_2_tpool(pool, handle_request, &data);
+
   return handle_request(&data);
 }

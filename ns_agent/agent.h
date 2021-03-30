@@ -20,6 +20,7 @@
 
 #include "log.h"
 #include "types.h"
+// #include "include/tpool.h"
 
 int open(const char *path, int oflag, ...);
 
@@ -31,6 +32,6 @@ static void getenv_options();
 
 extern void config_init();
 
-extern bool check_permission(const char * pathname);
+extern bool check_permission(const char * pathname, int oflag);
 
 #endif

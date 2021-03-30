@@ -44,7 +44,7 @@
 /* my define. */
 #define O_READ 0100
 #define O_WRITE 0010
-#define O_EXEC 0001
+// #define O_EXEC 0001
 
 #define MAX_PATH 512
 

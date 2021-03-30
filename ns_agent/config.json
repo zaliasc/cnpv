@@ -6,6 +6,7 @@
   ],
   "test":[
     {"PATH": "/home/zhuzhicheng/project/glibc/version.h", "AUTHORITY": "r"},
-    {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/check.h", "AUTHORITY": "w"}
+    {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/check.h", "AUTHORITY": "w"},
+    {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/config.c", "AUTHORITY": "wr"}
   ]
 }
