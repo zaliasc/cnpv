@@ -1,6 +1,5 @@
 {
-  "json":[
-    {"PATH": "/home/zhuzhicheng/project/glibc/version.h", "AUTHORITY": "r"},
+  "fopen":[
     {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/check.h", "AUTHORITY": "w"},
     {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/check1.h", "AUTHORITY": "w"}
   ],

@@ -22,7 +22,9 @@
 #include "types.h"
 // #include "include/tpool.h"
 
-int open(const char *path, int oflag, ...);
+int open(const char *pathname, int flags, ...);
+
+int openat(int dirfd, const char *pathname, int flags, ...);
 
 static int handle_request(void * data);
 

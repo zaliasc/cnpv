@@ -8,15 +8,11 @@ MODULE_LICENSE("GPL");
 
 unsigned long **sct;
 
-asmlinkage long
-fake_open(const char __user *filename, int flags, umode_t mode);
+asmlinkage long fake_open(const char __user *filename, int flags, umode_t mode);
 
-asmlinkage long
-(*real_open)(const char __user *filename, int flags, umode_t mode);
-asmlinkage long
+asmlinkage long (*real_open)(const char __user *filename, int flags, umode_t mode);
 
-int open_hook_init(void)
-{
+static int entry_point(void) {
     fm_alert("%s\n", "Greetings the World!");
 
     /* No consideration on failure. */
@@ -29,8 +25,7 @@ int open_hook_init(void)
     return 0;
 }
 
-void open_hook_exit(void)
-{
+static void exit_point(void) {
     disable_wp();
     UNHOOK_SCT(sct, open);
     enable_wp();
@@ -40,11 +35,10 @@ void open_hook_exit(void)
     return;
 }
 
-module_init(open_hook_init);
-module_exit(open_hook_exit);
+module_init(entry_point);
+module_exit(exit_point);
 
-asmlinkage long
-fake_open(const char __user *filename, int flags, umode_t mode)
+asmlinkage long fake_open(const char __user *filename, int flags, umode_t mode)
 {
     if ((flags & O_CREAT) && strcmp(filename, "/dev/null") != 0) {
         fm_alert("open: %s\n", filename);

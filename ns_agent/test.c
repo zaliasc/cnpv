@@ -19,3 +19,5 @@ int main() {
   printf("program: %s\n",program_invocation_short_name);
   return 0;
 }
+
+fopen()

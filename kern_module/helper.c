@@ -48,7 +48,6 @@ get_sct_via_sys_close(void)
     return NULL;
 }
 
-
 unsigned long **
 get_sct(void)
 {

@@ -96,12 +96,12 @@ static int handle_request(void * data) {
   }
 }
 
-int open(const char *path, int oflag, ...) {
+int open(const char *pathname, int flags, ...) {
   init_preload();
-  struct open_thread_args data = {.pathname = path, .flags = oflag};
-  if(oflag & O_CREAT) {
+  struct open_thread_args data = {.pathname = pathname, .flags = flags};
+  if(flags & O_CREAT) {
     va_list v;
-    va_start(v, oflag);
+    va_start(v, flags);
     data.mode = va_arg(v, mode_t);
   }
   else
@@ -110,4 +110,30 @@ int open(const char *path, int oflag, ...) {
   // add_task_2_tpool(pool, handle_request, &data);
 
   return handle_request(&data);
+}
+
+
+int openat(int dirfd, const char *pathname, int flags, ...) {
+  log_fatal("openat");
+  return -1;
+  // init_preload();
+  // if (dirfd == AT_FDCWD) {
+    
+  // }
+  // else {
+
+  // }
+
+  // struct open_thread_args data = {.pathname = pathname, .flags = flags};
+  // if(flags & O_CREAT) {
+  //   va_list v;
+  //   va_start(v, flags);
+  //   data.mode = va_arg(v, mode_t);
+  // }
+  // else
+  //   data.mode = 0;
+
+  // add_task_2_tpool(pool, handle_request, &data);
+
+  // return handle_request(&data);
 }
