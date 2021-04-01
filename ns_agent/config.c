@@ -10,7 +10,7 @@
 #include "json.h"
 #include "hashmap.h"
 
-extern struct open_calls real_open;
+extern struct real_calls real_call;
 extern char *program_invocation_short_name;
 extern char * config_path;
 
@@ -115,7 +115,7 @@ void config_init() {
     exit(-1);
   }
 
-  fd = real_open.open_call(config_path, O_RDONLY);
+  fd = real_call.real_open(config_path, O_RDONLY);
   if (fd == 0)
   {
     log_err("Unable to open %s", config_path);

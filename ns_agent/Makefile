@@ -28,8 +28,11 @@ test : all
 	gcc -g test.c -o test
 # 	LD_PRELOAD=./agent.so ./test
 
+fopen : all
+	gcc -g fopen.c -o fopen	
+
 clean :
-	rm -rf *.o *.out *.so test
+	rm -rf *.o *.out *.so test fopen
 
 # set environment LD_PRELOAD ./agent.so
 debug: all

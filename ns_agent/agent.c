@@ -26,9 +26,13 @@ static pthread_mutex_t giant_lock = PTHREAD_MUTEX_INITIALIZER;
 #define GLOBAL_UNLOCK do {} while (0)
 #endif
 
-struct open_calls real_open;
+struct real_calls real_call;
 
 char * config_path;
+
+static char * log_path = "/tmp/cnpv.log";
+
+int log_fd;
 
 // static int thread_num;
 
@@ -69,8 +73,16 @@ static void init_preload()
       goto out;
   }
 
-  real_open.open_call = dlsym(RTLD_NEXT, "open");
-  // real_open.open_call = open;
+  real_call.real_open = dlsym(RTLD_NEXT, "open");
+  real_call.real_fopen = dlsym(RTLD_NEXT, "fopen");
+  real_call.real_dprintf = dlsym(RTLD_NEXT, "dprintf");
+  real_call.real_openat = dlsym(RTLD_NEXT, "openat");
+
+  log_fd = real_call.real_open(log_path, O_RDWR|O_CREAT|O_APPEND, S_IRWXU);
+
+  if (log_fd == 0) {
+    exit (-1);
+  }
 
   getenv_options();
   config_init();
@@ -82,13 +94,13 @@ out:
 }
 
 static int handle_request(void * data) {
-  log_info("handle!");
-  struct open_thread_args * args = (struct open_thread_args *)data;
+  // log_info("handle!");
+  struct handle_args * args = (struct handle_args *)data;
   if (check_permission(args->pathname, args->flags) == true) {
     if (args->mode == 0)
-      return real_open.open_call(args->pathname, args->flags);
+      return real_call.real_open(args->pathname, args->flags);
     else
-      return real_open.open_call(args->pathname, args->flags, args->mode);
+      return real_call.real_open(args->pathname, args->flags, args->mode);
   }
   else {
     errno = 134;
@@ -98,7 +110,7 @@ static int handle_request(void * data) {
 
 int open(const char *pathname, int flags, ...) {
   init_preload();
-  struct open_thread_args data = {.pathname = pathname, .flags = flags};
+  struct handle_args data = {.pathname = pathname, .flags = flags, .type = OPEN};
   if(flags & O_CREAT) {
     va_list v;
     va_start(v, flags);
@@ -106,34 +118,29 @@ int open(const char *pathname, int flags, ...) {
   }
   else
     data.mode = 0;
-
+  log_err("open");
+  return real_call.real_open(pathname, flags, data.mode); 
   // add_task_2_tpool(pool, handle_request, &data);
 
   return handle_request(&data);
 }
 
-
 int openat(int dirfd, const char *pathname, int flags, ...) {
-  log_fatal("openat");
-  return -1;
-  // init_preload();
-  // if (dirfd == AT_FDCWD) {
-    
-  // }
-  // else {
+  init_preload(); 
+  struct handle_args data = {.pathname = pathname, .flags = flags, .type = OPENAT};
+  if(flags & O_CREAT) {
+    va_list v;
+    va_start(v, flags);
+    data.mode = va_arg(v, mode_t);
+  }
+  else
+    data.mode = 0;
+  log_err("openat");
+  return real_call.real_openat(dirfd, pathname, flags, data.mode);
+}
 
-  // }
-
-  // struct open_thread_args data = {.pathname = pathname, .flags = flags};
-  // if(flags & O_CREAT) {
-  //   va_list v;
-  //   va_start(v, flags);
-  //   data.mode = va_arg(v, mode_t);
-  // }
-  // else
-  //   data.mode = 0;
-
-  // add_task_2_tpool(pool, handle_request, &data);
-
-  // return handle_request(&data);
+FILE *fopen(const char *pathname, const char *mode) {
+  init_preload();
+  log_err("fopen");
+  return real_call.real_fopen(pathname, mode);
 }

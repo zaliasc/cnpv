@@ -1,10 +1,13 @@
 #ifndef LOG_H
 #define LOG_H
 
+extern int log_fd;
+extern struct real_calls real_call;
+
 #define __DEBUG
 
 #ifdef __DEBUG
-    #define DEBUG(format, ...) printf (format, ##__VA_ARGS__)
+    #define DEBUG(format, ...) real_call.real_dprintf (log_fd, format, ##__VA_ARGS__)
 #else
     #define DEBUG(format, ...)
 #endif

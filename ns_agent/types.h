@@ -76,15 +76,30 @@
 
 #define MAX_PATH 512
 
-struct open_calls
+struct real_calls
 {
-  int (*open_call)(const char *pathname, int flags, ...);
+  int (*real_open)(const char *pathname, int flags, ...);
+  int (*real_openat)(int dirfd, const char *pathname, int flags, ...); 
+  int (*real_fopen)(const char *pathname, const char *mode);
+  int (*real_dprintf)(int fd, const char *format, ...);
 };
 
-struct open_thread_args {
+typedef enum {
+  OPEN,
+  OPENAT,
+  FOPEN
+} FUNC_TYPE ;
+
+struct handle_args {
+        FUNC_TYPE type;
+        // open
         char * pathname;
         int flags;
         mode_t mode;
+        // openat
+        int dirfd;
+        // fopen
+        const char * f_mode;
 };
 
 struct user {
