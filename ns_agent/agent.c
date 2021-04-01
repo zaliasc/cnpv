@@ -118,7 +118,7 @@ int open(const char *pathname, int flags, ...) {
   }
   else
     data.mode = 0;
-  log_err("open");
+  log_err("open(): %s ", pathname);
   return real_call.real_open(pathname, flags, data.mode); 
   // add_task_2_tpool(pool, handle_request, &data);
 
@@ -135,12 +135,12 @@ int openat(int dirfd, const char *pathname, int flags, ...) {
   }
   else
     data.mode = 0;
-  log_err("openat");
+  log_err("openat(): %s ", pathname);
   return real_call.real_openat(dirfd, pathname, flags, data.mode);
 }
 
 FILE *fopen(const char *pathname, const char *mode) {
   init_preload();
-  log_err("fopen");
+  log_err("fopen(): %s ", pathname);
   return real_call.real_fopen(pathname, mode);
 }
