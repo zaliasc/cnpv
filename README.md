@@ -15,7 +15,7 @@ Container network permission virtualization
 
 #### 使用说明
 
-1.  CNPV_PATH=`pwd`/config.json LD_PRELOAD=`pwd`/agent.so 
+1.  CNPV_PATH=$PWD/config.json LD_PRELOAD=$PWD/agent.so 
 
 
 #### 参与贡献

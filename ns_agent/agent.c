@@ -113,15 +113,17 @@ int open(const char *pathname, int flags, ...) {
   init_preload();
   log_err("start open(): %s ", pathname);
   struct handle_args data = {.pathname = pathname, .flags = flags, .type = OPEN};
+  log_err("open(): %s ", pathname);
   if(flags & O_CREAT) {
     va_list v;
     va_start(v, flags);
     data.mode = va_arg(v, mode_t);
+    return real_call.real_open(pathname, flags, data.mode); 
   }
-  else
+  else {
     data.mode = 0;
-  log_err("open(): %s ", pathname);
-  return real_call.real_open(pathname, flags, data.mode); 
+    return real_call.real_open(pathname, flags); 
+  }
   // add_task_2_tpool(pool, handle_request, &data);
 
   // return handle_request(&data);
