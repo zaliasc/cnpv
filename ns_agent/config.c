@@ -3,7 +3,7 @@
 #include <errno.h>
 #include <string.h>
 #include <sys/stat.h>
-// #include <fcntl.h>
+#include <fcntl.h>
 
 #include "log.h"
 #include "types.h"
@@ -130,8 +130,6 @@ void config_init() {
     exit(-1);
   }
   close(fd);
-
-  // printf("%s\n", file_contents);
 
   json = (json_char *)file_contents;
 

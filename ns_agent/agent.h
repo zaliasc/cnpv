@@ -5,7 +5,7 @@
 #define _GNU_SOURCE
 #endif
 
-// #include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <dlfcn.h>
@@ -16,18 +16,10 @@
 #include <errno.h>
 #include <stdarg.h>
 #include <bits/types/FILE.h>
-
 #include <fcntl.h>
 
 #include "log.h"
 #include "types.h"
-// #include "include/tpool.h"
-
-int open(const char *pathname, int flags, ...);
-
-int openat(int dirfd, const char *pathname, int flags, ...);
-
-FILE *fopen(const char *pathname, const char *mode);
 
 static int handle_request(void * data);
 

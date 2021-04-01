@@ -36,6 +36,6 @@ void creat_at(char *dir_path, char *relative_path)
  
 int main()
 {
-	creat_at("./open", "log.txt");
+	creat_at("./dir", "log.txt");
 	return 0;
 }

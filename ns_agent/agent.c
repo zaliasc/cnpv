@@ -76,6 +76,7 @@ static void init_preload()
   real_call.real_open = dlsym(RTLD_NEXT, "open");
   real_call.real_fopen = dlsym(RTLD_NEXT, "fopen");
   real_call.real_dprintf = dlsym(RTLD_NEXT, "dprintf");
+  real_call.real_printf = dlsym(RTLD_NEXT, "printf");
   real_call.real_openat = dlsym(RTLD_NEXT, "openat");
 
   log_fd = real_call.real_open(log_path, O_RDWR|O_CREAT|O_APPEND, S_IRWXU);
@@ -110,6 +111,7 @@ static int handle_request(void * data) {
 
 int open(const char *pathname, int flags, ...) {
   init_preload();
+  log_err("start open(): %s ", pathname);
   struct handle_args data = {.pathname = pathname, .flags = flags, .type = OPEN};
   if(flags & O_CREAT) {
     va_list v;
@@ -122,11 +124,12 @@ int open(const char *pathname, int flags, ...) {
   return real_call.real_open(pathname, flags, data.mode); 
   // add_task_2_tpool(pool, handle_request, &data);
 
-  return handle_request(&data);
+  // return handle_request(&data);
 }
 
 int openat(int dirfd, const char *pathname, int flags, ...) {
   init_preload(); 
+  log_err("start openat(): %s ", pathname);
   struct handle_args data = {.pathname = pathname, .flags = flags, .type = OPENAT};
   if(flags & O_CREAT) {
     va_list v;
@@ -141,6 +144,7 @@ int openat(int dirfd, const char *pathname, int flags, ...) {
 
 FILE *fopen(const char *pathname, const char *mode) {
   init_preload();
+  log_err("start fopen(): %s ", pathname);
   log_err("fopen(): %s ", pathname);
   return real_call.real_fopen(pathname, mode);
 }
