@@ -22,9 +22,9 @@ FILE *fopen(const char *pathname, const char *mode) {
 }
 
 int open64(const char *pathname, int flags, ...) {
-  fprintf(stderr, "called open(%s)\n", pathname);
+  fprintf(stderr, "called open64(%s)\n", pathname);
   if (!real_open) {
-    real_open = dlsym(RTLD_NEXT, "open64");
+    real_open64 = dlsym(RTLD_NEXT, "open64");
   }
   if(flags & O_CREAT) {
     va_list v;
