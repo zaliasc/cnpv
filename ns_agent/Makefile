@@ -24,13 +24,15 @@ hashmap.o : src/hashmap.c
 json.o : src/json.c
 	$(cc) -c $(CFLAGS) $(INC) src/json.c
 
+
+# test
 open : open.c
 	gcc -g open.c -o open
 	# LD_PRELOAD=./agent.so ./open
 
 openat : openat.c
 	gcc -g openat.c -o openat
-	# LD_PRELOAD=./agent.so ./openat	
+	# LD_PRELOAD=./agent.so ./openat
 
 fopen : fopen.c
 	gcc -g fopen.c -o fopen
@@ -44,3 +46,6 @@ debug: all
 	# gcc -g test.c -o test
 	gdb -iex "set exec-wrapper env LD_PRELOAD=./agent.so" ./fopen
 	# set exec-wrapper env 'LD_PRELOAD=agent.so'
+
+preload: preload.c
+	gcc -fPIC -shared -o preload.so preload.c -ldl

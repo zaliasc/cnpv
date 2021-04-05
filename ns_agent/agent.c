@@ -122,7 +122,7 @@ int open(const char *pathname, int flags, ...) {
   }
   else {
     data.mode = 0;
-    return real_call.real_open(pathname, flags); 
+    return real_call.real_open(pathname, flags);
   }
   // add_task_2_tpool(pool, handle_request, &data);
 
