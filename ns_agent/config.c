@@ -38,9 +38,9 @@ uint64_t user_hash(const void *item, uint64_t seed0, uint64_t seed1) {
 // config
 static int get_mode_value(const char * s) {
   int ret = 0;
+  if (strstr(s,"F") || strstr(s,"f")) ret = O_FORBIDDEN;
   if (strstr(s,"R") || strstr(s,"r")) ret |= O_READ;
   if (strstr(s,"W") || strstr(s,"w")) ret |= O_WRITE;
-  // if (strstr(s,"X") || strstr(s,"x")) ret |= O_EXEC;
   return ret;
 }
 

@@ -3,15 +3,13 @@
 
 #include <stdio.h>
 extern int log_fd;
-// extern struct real_calls real_call;
-
 
 // #define __DEBUG_STDOUT
-#define __DEBUG_FILE
+// #define __DEBUG_FILE
 
 #ifdef __DEBUG_STDOUT
     // #define DEBUG(format, ...) real_call.real_printf (format, ##__VA_ARGS__)
-    #define DEBUG(format, ...) printf (format, ##__VA_ARGS__) 
+    #define DEBUG(format, ...) fprintf (stdout, format, ##__VA_ARGS__) 
 #else
 #ifdef __DEBUG_FILE
     // #define DEBUG(format, ...) real_call.real_dprintf (log_fd, format, ##__VA_ARGS__)

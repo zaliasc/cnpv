@@ -1,7 +1,13 @@
 {
   "fopen":[
     {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/check.h", "AUTHORITY": "w"},
-    {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/check1.h", "AUTHORITY": "w"}
+    {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/agent.c", "AUTHORITY": "F"},
+    {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/config.c", "AUTHORITY": "f"}
+  ],
+  "open":[
+    {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/check.h", "AUTHORITY": "w"},
+    {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/agent.c", "AUTHORITY": "W"},
+    {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/config.c.h", "AUTHORITY": "F"}
   ],
   "test":[
     {"PATH": "/home/zhuzhicheng/project/glibc/version.h", "AUTHORITY": "r"},

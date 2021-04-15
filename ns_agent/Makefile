@@ -39,7 +39,7 @@ fopen : fopen.c
 	# LD_PRELOAD=./agent.so ./open
 
 clean :
-	rm -rf *.o *.out *.so open openat fopen
+	rm -rf *.o *.out *.so open openat fopen 
 
 # set environment LD_PRELOAD ./agent.so
 debug: all

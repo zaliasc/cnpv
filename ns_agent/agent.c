@@ -34,29 +34,16 @@ static char * log_path = "/tmp/cnpv.log";
 
 int log_fd;
 
-// static int thread_num;
-
-// tpool_t *pool;
-
 static pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
 
-// static void thread_init(int thread_num) {
-//   if (create_tpool(&pool, thread_num) != 0) {
-//     log_err("create tpool failed!\n");
-//     exit(-1);
-//   }
-//   log_info("create tpool success! thread_num = %d", thread_num);
-// }
-
-static void getenv_options()
-{
+static void getenv_options() {
   config_path = getenv("CNPV_PATH");
-  // const char* thread_num_p = getenv("CNPV_THREAD");
+
   if (!config_path) {
     log_err("please check env: CNPV_PATH");
     exit(-1);
   }
-  // thread_num = atoi(thread_num_p);
+
   return;
 }
 
@@ -73,11 +60,11 @@ static void init_preload()
       goto out;
   }
 
-  real_call.real_open = dlsym(RTLD_NEXT, "open");
   real_call.real_fopen = dlsym(RTLD_NEXT, "fopen");
-  real_call.real_dprintf = dlsym(RTLD_NEXT, "dprintf");
-  real_call.real_printf = dlsym(RTLD_NEXT, "printf");
+  real_call.real_open = dlsym(RTLD_NEXT, "open");
+  real_call.real_open64 = dlsym(RTLD_NEXT, "open64");
   real_call.real_openat = dlsym(RTLD_NEXT, "openat");
+  real_call.real_openat64 = dlsym(RTLD_NEXT, "openat64");
 
   log_fd = real_call.real_open(log_path, O_RDWR|O_CREAT|O_APPEND, S_IRWXU);
 
@@ -86,8 +73,9 @@ static void init_preload()
   }
 
   getenv_options();
+
   config_init();
-  // thread_init(thread_num);
+  
   init = 1;
 
 out:
@@ -95,58 +83,114 @@ out:
 }
 
 static int handle_request(void * data) {
-  // log_info("handle!");
   struct handle_args * args = (struct handle_args *)data;
-  if (check_permission(args->pathname, args->flags) == true) {
-    if (args->mode == 0)
-      return real_call.real_open(args->pathname, args->flags);
-    else
-      return real_call.real_open(args->pathname, args->flags, args->mode);
-  }
-  else {
+
+  if (check_permission(args->pathname, args->flags) == false) {
+    log_info("check path %s failed!", args->pathname);
     errno = 134;
     return -1;
+  }
+
+  switch (args->type) {
+    case OPEN: {
+      log_info("handle open");
+      if(__OPEN_NEEDS_MODE(args->flags))
+        return real_call.real_open(args->pathname, args->flags, args->mode);
+      else
+        return real_call.real_open(args->pathname, args->flags);
+    }
+    case OPENAT: {
+      log_info("handle openat");
+      if(__OPEN_NEEDS_MODE(args->flags))
+        return real_call.real_openat(args->dirfd, args->pathname, args->flags, args->mode);
+      else
+        return real_call.real_open(args->dirfd, args->pathname, args->flags); 
+    }
+    case OPEN64: {
+      log_info("handle open64");
+      if(__OPEN_NEEDS_MODE(args->flags))
+        return real_call.real_open64(args->pathname, args->flags, args->mode);
+      else
+        return real_call.real_open64(args->pathname, args->flags);
+    }
+    case OPENAT64: {
+      log_info("handle openat64");
+      if(__OPEN_NEEDS_MODE(args->flags))
+        return real_call.real_openat64(args->dirfd, args->pathname, args->flags, args->mode);
+      else
+        return real_call.real_openat64(args->dirfd, args->pathname, args->flags);
+    }
+    case FOPEN: {
+      log_info("handle fopen");
+      return real_call.real_fopen(args->pathname, args->f_mode);
+    }
+    default: {
+      log_err("undefined type!");
+      errno = 134;
+      return -1;
+    }
   }
 }
 
 int open(const char *pathname, int flags, ...) {
   init_preload();
-  log_err("start open(): %s ", pathname);
+  log_info("call open(): %s ", pathname);
   struct handle_args data = {.pathname = pathname, .flags = flags, .type = OPEN};
-  log_err("open(): %s ", pathname);
-  if(flags & O_CREAT) {
-    va_list v;
-    va_start(v, flags);
-    data.mode = va_arg(v, mode_t);
-    return real_call.real_open(pathname, flags, data.mode); 
-  }
-  else {
-    data.mode = 0;
-    return real_call.real_open(pathname, flags);
-  }
-  // add_task_2_tpool(pool, handle_request, &data);
-
-  // return handle_request(&data);
-}
-
-int openat(int dirfd, const char *pathname, int flags, ...) {
-  init_preload(); 
-  log_err("start openat(): %s ", pathname);
-  struct handle_args data = {.pathname = pathname, .flags = flags, .type = OPENAT};
-  if(flags & O_CREAT) {
+  if(__OPEN_NEEDS_MODE(flags)) {
     va_list v;
     va_start(v, flags);
     data.mode = va_arg(v, mode_t);
   }
   else
     data.mode = 0;
-  log_err("openat(): %s ", pathname);
-  return real_call.real_openat(dirfd, pathname, flags, data.mode);
+  return handle_request(&data);
+}
+
+int open64(const char *pathname, int flags, ...) {
+  init_preload();
+  log_info("call open64(): %s ", pathname);
+  struct handle_args data = {.pathname = pathname, .flags = flags, .type = OPEN};
+  if(__OPEN_NEEDS_MODE(flags)) {
+    va_list v;
+    va_start(v, flags);
+    data.mode = va_arg(v, mode_t);
+  }
+  else
+    data.mode = 0;
+  return handle_request(&data);
+}
+
+int openat(int dirfd, const char *pathname, int flags, ...) {
+  init_preload(); 
+  log_info("call openat(): %s ", pathname);
+  struct handle_args data = {.pathname = pathname, .flags = flags, .type = OPENAT, .dirfd = dirfd};
+  if(__OPEN_NEEDS_MODE(flags)) {
+    va_list v;
+    va_start(v, flags);
+    data.mode = va_arg(v, mode_t);
+  }
+  else
+    data.mode = 0;
+  return handle_request(&data);
+}
+
+int openat64(int dirfd, const char *pathname, int flags, ...) {
+  init_preload(); 
+  log_info("call openat(): %s ", pathname);
+  struct handle_args data = {.pathname = pathname, .flags = flags, .type = OPENAT64, .dirfd = dirfd};
+  if(__OPEN_NEEDS_MODE(flags)) {
+    va_list v;
+    va_start(v, flags);
+    data.mode = va_arg(v, mode_t);
+  }
+  else
+    data.mode = 0;
+  return handle_request(&data);
 }
 
 FILE *fopen(const char *pathname, const char *mode) {
   init_preload();
-  log_err("start fopen(): %s ", pathname);
-  log_err("fopen(): %s ", pathname);
-  return real_call.real_fopen(pathname, mode);
+  log_info("call fopen(): %s ", pathname);
+  struct handle_args data = {.pathname = pathname, .f_mode = mode, .type = FOPEN};
+  return handle_request(&data);
 }
