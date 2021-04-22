@@ -6,6 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "cache.h"
 #include "hashmap.h"
 #include "log.h"
 #include "types.h"
@@ -15,13 +16,29 @@ extern struct hashmap *map;
 extern char *cwd;
 
 bool check_permission(const char *pathname, int oflag) {
-
+  bool ret = false;
   char buf[MAX_PATH];
+  int permission = -1;
+  char *cache_value = NULL;
 
   if (!strstr(pathname, "/")) {
     sprintf(buf, "%s/%s", cwd, pathname);
-    log_info("pathname: %s", buf);
+    log_debug("pathname: %s", buf);
   }
+
+#ifdef USE_CACHE
+  cache_get(buf, &cache_value); // A or F
+  if (cache_value) {
+    switch (*cache_value) {
+    case 'A':
+      return true;
+    case 'F':
+      return false;
+    default:
+      break;
+    }
+  }
+#endif
 
   struct user *user;
   struct user tmp = {.permission = 0};
@@ -29,23 +46,35 @@ bool check_permission(const char *pathname, int oflag) {
 #pragma GCC diagnostic ignored "-Wstringop-truncation"
   strncpy(tmp.pathname, buf, MAX_PATH - 1);
 #pragma GCC diagnostic pop
-  // strncpy(tmp.pathname, pathname, MAX_PATH-1);
-  user = hashmap_get(map, &tmp);
-  if (!user)
-    return true;
 
-  int permission = user->permission;
+  user = hashmap_get(map, &tmp);
+
+  if (!user) {
+#ifdef USE_CACHE
+    cache_insert(buf, "A");
+#endif
+    return true;
+  }
+
+  permission = user->permission;
 
   if (oflag == FOPEN_MODE_FLAG)
-    return true;
-  if (permission & O_FORBIDDEN)
-    return false;
-  if (oflag & O_RDONLY)
-    return !!(permission & O_READ);
-  if (oflag & O_WRONLY)
-    return !!(permission & O_WRITE);
-  if (oflag & O_RDWR)
-    return (!!(permission & O_READ)) && (!!(permission & O_WRITE));
+    ret = true;
+  else if (permission & O_FORBIDDEN)
+    ret = false;
+  else if (oflag & O_RDONLY)
+    ret = !!(permission & O_READ);
+  else if (oflag & O_WRONLY)
+    ret = !!(permission & O_WRITE);
+  else if (oflag & O_RDWR)
+    ret = (!!(permission & O_READ)) && (!!(permission & O_WRITE));
 
-  return true;
+#ifdef USE_CACHE
+  if (ret == true)
+    cache_insert(buf, "A");
+  else
+    cache_insert(buf, "F");
+#endif
+
+  return ret;
 }

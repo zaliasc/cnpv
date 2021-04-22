@@ -92,6 +92,10 @@ static void init_preload() {
 
   config_init();
 
+#ifdef USE_CACHE
+  cache_init();
+#endif
+
   init = 1;
 
 out:

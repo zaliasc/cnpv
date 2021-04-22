@@ -35,7 +35,7 @@ uint64_t user_hash(const void *item, uint64_t seed0, uint64_t seed1) {
 }
 
 // config
-static int get_mode_value(const char *s) {
+int get_mode_value(const char *s) {
   int ret = 0;
   if (strstr(s, "F") || strstr(s, "f"))
     ret = O_FORBIDDEN;

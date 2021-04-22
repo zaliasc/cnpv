@@ -4,10 +4,13 @@
 #include <pthread.h>
 #include <sys/types.h>
 
+// #define USE_CACHE
+
 /* permission define. */
-#define O_READ 0100
-#define O_WRITE 0010
-#define O_FORBIDDEN 0001
+#define O_ALLOW 01000
+#define O_READ 00100
+#define O_WRITE 00010
+#define O_FORBIDDEN 00001
 
 #define FOPEN_MODE_FLAG 0xFFFF
 

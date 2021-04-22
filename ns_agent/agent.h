@@ -19,6 +19,7 @@
 
 #include "log.h"
 #include "types.h"
+#include "cache.h"
 
 static int handle_request(void* data);
 

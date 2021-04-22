@@ -4,8 +4,6 @@
 #include "log.h"
 #include "lru.h"
 
-// #define USE_CACHE
-
 #define CACHE_SIZE (8 * 1024)  // 8k
 #define AVG_SIZE (2 * 1024)    // 2k
 

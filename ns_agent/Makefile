@@ -26,15 +26,15 @@ json.o : src/json.c
 
 
 # test
-open : open.c
+open : test_open.c
 	gcc -g open.c -o open
 	# LD_PRELOAD=./agent.so ./open
 
-openat : openat.c
+openat : test_openat.c
 	gcc -g openat.c -o openat
 	# LD_PRELOAD=./agent.so ./openat
 
-fopen : fopen.c
+fopen : test_fopen.c
 	gcc -g fopen.c -o fopen
 	# LD_PRELOAD=./agent.so ./open
 
