@@ -2,3 +2,7 @@
 *.out
 *.so
 kern_test
+*.data
+*.data.old
+*.perf
+*.folded

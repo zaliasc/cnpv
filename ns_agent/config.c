@@ -1,63 +1,66 @@
-#include <unistd.h>
-#include <stdio.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <fcntl.h>
+#include <unistd.h>
 
+#include "hashmap.h"
+#include "json.h"
 #include "log.h"
 #include "types.h"
-#include "json.h"
-#include "hashmap.h"
 
 extern struct real_calls real_call;
 extern char *program_invocation_short_name;
-extern char * config_path;
+extern char *config_path;
 
 // hashmap
 struct hashmap *map;
 
 int user_compare(const void *a, const void *b, void *udata) {
-    const struct user *ua = a;
-    const struct user *ub = b;
-    return strcmp(ua->pathname, ub->pathname);
+  const struct user *ua = a;
+  const struct user *ub = b;
+  return strcmp(ua->pathname, ub->pathname);
 }
 
 bool user_iter(const void *item, void *udata) {
-    const struct user *user = item;
-    printf("%s (age=%d)\n", user->pathname, user->permission);
-    return true;
+  const struct user *user = item;
+  printf("%s (age=%d)\n", user->pathname, user->permission);
+  return true;
 }
 
 uint64_t user_hash(const void *item, uint64_t seed0, uint64_t seed1) {
-    const struct user *user = item;
-    return hashmap_sip(user->pathname, strlen(user->pathname), seed0, seed1);
+  const struct user *user = item;
+  return hashmap_sip(user->pathname, strlen(user->pathname), seed0, seed1);
 }
 
-
 // config
-static int get_mode_value(const char * s) {
+static int get_mode_value(const char *s) {
   int ret = 0;
-  if (strstr(s,"F") || strstr(s,"f")) ret = O_FORBIDDEN;
-  if (strstr(s,"R") || strstr(s,"r")) ret |= O_READ;
-  if (strstr(s,"W") || strstr(s,"w")) ret |= O_WRITE;
+  if (strstr(s, "F") || strstr(s, "f"))
+    ret = O_FORBIDDEN;
+  if (strstr(s, "R") || strstr(s, "r"))
+    ret |= O_READ;
+  if (strstr(s, "W") || strstr(s, "w"))
+    ret |= O_WRITE;
   return ret;
 }
 
 static void process_pair(json_value *pair) {
   if (pair->type != json_object) {
     log_err("parse pair failed");
-    exit(-1); 
+    exit(-1);
   }
-  
+
   struct user tmp = {.pathname = {0}};
 
   for (int i = 0; i < pair->u.array.length; i++) {
     if (!strcmp(pair->u.object.values[i].name, "PATH")) {
-      strncpy(tmp.pathname, pair->u.object.values[i].value->u.string.ptr, MAX_PATH -1);
-    }
-    else if (!strcmp(pair->u.object.values[i].name, "AUTHORITY")) {
-      tmp.permission = get_mode_value(pair->u.object.values[i].value->u.string.ptr);
+      strncpy(tmp.pathname, pair->u.object.values[i].value->u.string.ptr,
+              MAX_PATH - 1);
+    } else if (!strcmp(pair->u.object.values[i].name, "AUTHORITY")) {
+      tmp.permission =
+          get_mode_value(pair->u.object.values[i].value->u.string.ptr);
     }
   }
 
@@ -90,7 +93,6 @@ static void process_root(json_value *root) {
   return;
 }
 
-
 void config_init() {
   log_info("config_init()");
 
@@ -101,29 +103,25 @@ void config_init() {
   json_char *json;
   json_value *value;
 
-  if (stat(config_path, &filestatus) != 0)
-  {
+  if (stat(config_path, &filestatus) != 0) {
     log_err("File %s not found", config_path);
     exit(-1);
   }
 
   file_size = filestatus.st_size;
   file_contents = (char *)malloc(filestatus.st_size);
-  if (file_contents == NULL)
-  {
+  if (file_contents == NULL) {
     log_err("Memory error: unable to allocate %d bytes", file_size);
     exit(-1);
   }
 
   fd = real_call.real_open(config_path, O_RDONLY);
-  if (fd == 0)
-  {
+  if (fd == 0) {
     log_err("Unable to open %s", config_path);
     free(file_contents);
     exit(-1);
   }
-  if (read(fd, file_contents, file_size) == -1)
-  {
+  if (read(fd, file_contents, file_size) == -1) {
     log_err("Unable t read content of %s", config_path);
     close(fd);
     free(file_contents);
@@ -135,18 +133,17 @@ void config_init() {
 
   value = json_parse(json, file_size);
 
-  if (value == NULL)
-  {
+  if (value == NULL) {
     log_err("Unable to parse config_file!");
     free(file_contents);
     exit(1);
   }
 
-  map = hashmap_new(sizeof(struct user), 0, 0, 0, 
-                    user_hash, user_compare, NULL); 
+  map =
+      hashmap_new(sizeof(struct user), 0, 0, 0, user_hash, user_compare, NULL);
 
   process_root(value);
-  
+
   log_info("hash map count : %d", (int)hashmap_count(map));
 
   json_value_free(value);

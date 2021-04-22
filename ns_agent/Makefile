@@ -1,7 +1,7 @@
 cc = gcc
 obj = agent.o check.o config.o hashmap.o json.o
 INC=-I include/
-CFLAGS := -g -O3 -Wall -fPIC
+CFLAGS := -g -O3 -Wall -fPIC -Wno-strict-aliasing -Wno-unused-variable
 CFLAGS_AGENT := -g -shared
 LD_FLAG := -ldl -lm
 
