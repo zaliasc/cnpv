@@ -125,14 +125,14 @@ static int handle_request(void *data) {
 
   switch (args->type) {
   case OPEN: {
-    log_info("handle open");
+    log_debug("handle open");
     if (__OPEN_NEEDS_MODE(args->flags))
       return real_call.real_open(args->pathname, args->flags, args->mode);
     else
       return real_call.real_open(args->pathname, args->flags);
   }
   case OPENAT: {
-    log_info("handle openat");
+    log_debug("handle openat");
     if (__OPEN_NEEDS_MODE(args->flags))
       return real_call.real_openat(args->dirfd, args->pathname, args->flags,
                                    args->mode);
@@ -140,14 +140,14 @@ static int handle_request(void *data) {
       return real_call.real_openat(args->dirfd, args->pathname, args->flags);
   }
   case OPEN64: {
-    log_info("handle open64");
+    log_debug("handle open64");
     if (__OPEN_NEEDS_MODE(args->flags))
       return real_call.real_open64(args->pathname, args->flags, args->mode);
     else
       return real_call.real_open64(args->pathname, args->flags);
   }
   case OPENAT64: {
-    log_info("handle openat64");
+    log_debug("handle openat64");
     if (__OPEN_NEEDS_MODE(args->flags))
       return real_call.real_openat64(args->dirfd, args->pathname, args->flags,
                                      args->mode);
@@ -155,7 +155,7 @@ static int handle_request(void *data) {
       return real_call.real_openat64(args->dirfd, args->pathname, args->flags);
   }
   // case FOPEN: {
-  //   log_info(level, "handle fopen");
+  //   log_debug(level, "handle fopen");
   //   return real_call.real_fopen(args->pathname, args->f_mode);
   // }
   default: {

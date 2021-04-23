@@ -20,7 +20,8 @@
   "app-test":[
     {"PATH": "/home/zhuzhicheng/project/cnpv/perf_test/test.c", "AUTHORITY": "wr"},
     {"PATH": "/home/zhuzhicheng/project/cnpv/perf_test/flame.sh", "AUTHORITY": "wr"}
-  ],"nginx":[
+  ],
+  "nginx":[
     {"PATH": "/home/zhuzhicheng/project/nginx_file/index.html", "AUTHORITY": "f"}
   ]
 }

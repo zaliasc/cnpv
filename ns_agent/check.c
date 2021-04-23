@@ -24,6 +24,8 @@ bool check_permission(const char *pathname, int oflag) {
   if (!strstr(pathname, "/")) {
     sprintf(buf, "%s/%s", cwd, pathname);
     log_debug("pathname: %s", buf);
+  } else {
+    strcpy(buf, pathname);
   }
 
 #ifdef USE_CACHE
