@@ -66,11 +66,11 @@ bool check_permission(const char *pathname, int oflag) {
     ret = true;
   else if (permission & O_FORBIDDEN)
     ret = false;
-  else if (oflag == O_RDONLY)
+  else if (oflag & 0x03 == O_RDONLY)
     ret = !!(permission & O_READ);
-  else if (oflag == O_WRONLY)
+  else if (oflag & 0x03 == O_WRONLY)
     ret = !!(permission & O_WRITE);
-  else if (oflag == O_RDWR)
+  else if (oflag & 0x03 == O_RDWR)
     ret = (!!(permission & O_READ)) && (!!(permission & O_WRITE));
 
 #ifdef USE_CACHE
