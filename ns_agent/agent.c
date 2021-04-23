@@ -40,7 +40,9 @@ char *config_path;
 
 char *cwd;
 
-static char *log_path = "/tmp/cnpv.log";
+extern char *program_invocation_short_name;
+
+// static char *log_path = "/tmp/cnpv.log";
 
 int log_fd;
 
@@ -75,18 +77,28 @@ static void init_preload() {
   real_call.real_openat = dlsym(RTLD_NEXT, "openat");
   real_call.real_openat64 = dlsym(RTLD_NEXT, "openat64");
 
-  log_fd = real_call.real_open(log_path, O_RDWR | O_CREAT | O_APPEND, S_IRWXU);
-
-  if (log_fd == 0) {
-    exit(-1);
-  }
-
   cwd = getcwd(NULL, 0);
 
   if (cwd == NULL) {
     log_err("getcwd failed!");
     exit(-1);
   }
+
+  char log_path[MAX_PATH];
+
+  sprintf(log_path, "%s/%s-%s%s", cwd, "cnpv",program_invocation_short_name, ".log");
+
+#ifdef DEBUG_FILE
+
+  log_fd = real_call.real_open(log_path, O_RDWR | O_CREAT | O_APPEND, S_IRWXU);
+
+  log_debug("log_fd : %d", log_fd);
+
+  if (log_fd == -1) {
+    fprintf(stdout, "open/create log file error");
+    exit(-1);
+  }
+#endif  
 
   getenv_options();
 
@@ -172,7 +184,7 @@ int open64(const char *pathname, int flags, ...) {
   init_preload();
   log_info("call open64(): %s ", pathname);
   struct handle_args data = {
-      .pathname = pathname, .flags = flags, .type = OPEN};
+      .pathname = pathname, .flags = flags, .type = OPEN64};
   if (__OPEN_NEEDS_MODE(flags)) {
     va_list v;
     va_start(v, flags);

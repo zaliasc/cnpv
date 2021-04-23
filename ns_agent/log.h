@@ -2,17 +2,9 @@
 #define LOG_H
 
 #include <stdio.h>
+#include "types.h"
 
 extern int log_fd;
-
-#define LOG_INFO
-#define LOG_DEBUG
-#define LOG_WARN
-#define LOG_ERR
-#define LOG_FATAL
-
-#define DEBUG_STDOUT
-// #define DEBUG_FILE
 
 #ifdef DEBUG_STDOUT
     #define DEBUG(format, ...) fprintf (stdout, format, ##__VA_ARGS__) 

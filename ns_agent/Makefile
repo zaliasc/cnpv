@@ -1,5 +1,5 @@
 cc = gcc
-obj = agent.o check.o config.o hashmap.o json.o
+obj = agent.o check.o config.o hashmap.o json.o cache.o lru.o
 INC=-I include/
 CFLAGS := -g -O3 -Wall -fPIC -Wno-strict-aliasing -Wno-unused-variable
 CFLAGS_AGENT := -g -shared
@@ -18,6 +18,12 @@ check.o : check.c
 config.o : config.c
 	$(cc) -c $(CFLAGS) $(INC) config.c	
 
+cache.o : cache.c
+	$(cc) -c $(CFLAGS) $(INC) cache.c	
+
+lru.o : lru.c
+	$(cc) -c $(CFLAGS) $(INC) lru.c	
+
 hashmap.o : src/hashmap.c
 	$(cc) -c $(CFLAGS) $(INC) src/hashmap.c                                  
 
@@ -25,21 +31,22 @@ json.o : src/json.c
 	$(cc) -c $(CFLAGS) $(INC) src/json.c
 
 
+
 # test
 open : test_open.c
-	gcc -g open.c -o open
+	gcc -g test_open.c -o open
 	# LD_PRELOAD=./agent.so ./open
 
 openat : test_openat.c
-	gcc -g openat.c -o openat
+	gcc -g test_openat.c -o openat
 	# LD_PRELOAD=./agent.so ./openat
 
 fopen : test_fopen.c
-	gcc -g fopen.c -o fopen
+	gcc -g test_fopen.c -o fopen
 	# LD_PRELOAD=./agent.so ./open
 
 clean :
-	rm -rf *.o *.out *.so open openat fopen 
+	rm -rf *.o *.out *.so open openat fopen *.log
 
 # set environment LD_PRELOAD ./agent.so
 debug: all

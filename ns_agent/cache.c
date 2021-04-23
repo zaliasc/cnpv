@@ -10,7 +10,7 @@ void copy_key_val(lruc *cache, const char *key, const char *val) {
   strcpy(new_key, key);
   char *new_val = (char *)malloc(strlen(val) + 1);
   strcpy(new_val, val);
-  if (error = lruc_set(cache, new_key, strlen(key) + 1, new_val, AVG_SIZE))
+  if ((error = lruc_set(cache, new_key, strlen(key) + 1, new_val, AVG_SIZE)))
     log_err("Error in set: %i\n", error);
 }
 
@@ -29,7 +29,7 @@ void cache_insert(const char *key, const char *value) {
 
 void cache_get(char *key, char **ret) {
   int error = 0;
-  if (error = lruc_get(cache, key, strlen(key) + 1, (void **)(ret))) {
+  if ((error = lruc_get(cache, key, strlen(key) + 1, (void **)(ret)))) {
     log_err("Error in get: %i\n", error);
     exit(-1);
   }

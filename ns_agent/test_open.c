@@ -5,10 +5,13 @@
 #include <unistd.h>
 
 int main() {
-  int fd = open("agent.c", 00 | 0, 0);
+  int fd = open("agent.c", O_RDONLY, 0);
   printf("%d\n", fd);
   char buf[100] = {0};
-  ssize_t t = read(fd, buf, 10);
-  printf("buf:%s\n", buf);
+  if (fd != -1) {
+
+    ssize_t t = read(fd, buf, 10);
+    printf("buf:%s\n", buf);
+  }
   return 0;
 }

@@ -13,4 +13,4 @@ void cache_insert(const char* key, const char* value);
 
 void cache_get(char* key, char** ret);
 
-#endif
+#endif // CACHE_H

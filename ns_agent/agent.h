@@ -31,4 +31,4 @@ extern void config_init();
 
 extern bool check_permission(const char* pathname, int oflag);
 
-#endif
+#endif // AGENT_H

@@ -5,44 +5,41 @@
 #include <stdint.h>
 #include <time.h>
 
-
 // ------------------------------------------
 // errors
 // ------------------------------------------
 typedef enum {
-  LRUC_NO_ERROR = 0,
-  LRUC_MISSING_CACHE,
-  LRUC_MISSING_KEY,
-  LRUC_MISSING_VALUE,
-  LRUC_PTHREAD_ERROR,
-  LRUC_VALUE_TOO_LARGE
+    LRUC_NO_ERROR = 0,
+    LRUC_MISSING_CACHE,
+    LRUC_MISSING_KEY,
+    LRUC_MISSING_VALUE,
+    LRUC_PTHREAD_ERROR,
+    LRUC_VALUE_TOO_LARGE
 } lruc_error;
-
 
 // ------------------------------------------
 // types
 // ------------------------------------------
 typedef struct {
-  void      *value;
-  void      *key;
-  uint32_t  value_length;
-  uint32_t  key_length;
-  uint64_t  access_count;
-  void      *next;
+    void *value;
+    void *key;
+    uint32_t value_length;
+    uint32_t key_length;
+    uint64_t access_count;
+    void *next;
 } lruc_item;
 
 typedef struct {
-  lruc_item **items;
-  uint64_t  access_count;
-  uint64_t  free_memory;
-  uint64_t  total_memory;
-  uint64_t  average_item_length;
-  uint32_t  hash_table_size;
-  time_t    seed;
-  lruc_item *free_items;
-  pthread_mutex_t *mutex;
+    lruc_item **items;
+    uint64_t access_count;
+    uint64_t free_memory;
+    uint64_t total_memory;
+    uint64_t average_item_length;
+    uint32_t hash_table_size;
+    time_t seed;
+    lruc_item *free_items;
+    pthread_mutex_t *mutex;
 } lruc;
-
 
 // ------------------------------------------
 // api
@@ -53,4 +50,4 @@ lruc_error lruc_set(lruc *cache, void *key, uint32_t key_length, void *value, ui
 lruc_error lruc_get(lruc *cache, void *key, uint32_t key_length, void **value);
 lruc_error lruc_delete(lruc *cache, void *key, uint32_t key_length);
 
-#endif
+#endif // LOG_H

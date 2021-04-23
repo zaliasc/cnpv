@@ -6,12 +6,21 @@
   ],
   "open":[
     {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/check.h", "AUTHORITY": "w"},
-    {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/agent.c", "AUTHORITY": "W"},
-    {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/config.c.h", "AUTHORITY": "F"}
+    {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/agent.c", "AUTHORITY": "w"},
+    {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/config.c", "AUTHORITY": "w"}
   ],
   "test":[
-    {"PATH": "/home/zhuzhicheng/project/glibc/version.h", "AUTHORITY": "r"},
     {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/check.h", "AUTHORITY": "w"},
-    {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/config.c", "AUTHORITY": "wr"}
+    {"PATH": "/home/zhuzhicheng/project/cnpv/perf_test/flame.sh", "AUTHORITY": "wr"}
+  ],
+  "a.out":[
+    {"PATH": "/home/zhuzhicheng/project/cnpv/perf_test/test.c", "AUTHORITY": "wr"},
+    {"PATH": "/home/zhuzhicheng/project/cnpv/perf_test/flame.sh", "AUTHORITY": "wr"}
+  ],  
+  "app-test":[
+    {"PATH": "/home/zhuzhicheng/project/cnpv/perf_test/test.c", "AUTHORITY": "wr"},
+    {"PATH": "/home/zhuzhicheng/project/cnpv/perf_test/flame.sh", "AUTHORITY": "wr"}
+  ],"nginx":[
+    {"PATH": "/home/zhuzhicheng/project/nginx_file/index.html", "AUTHORITY": "f"}
   ]
 }
