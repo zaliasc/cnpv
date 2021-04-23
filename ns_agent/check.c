@@ -60,6 +60,8 @@ bool check_permission(const char *pathname, int oflag) {
 
   permission = user->permission;
 
+  log_debug("permission: %d  oflag: %d", permission, oflag);
+
   if (oflag == FOPEN_MODE_FLAG)
     ret = true;
   else if (permission & O_FORBIDDEN)

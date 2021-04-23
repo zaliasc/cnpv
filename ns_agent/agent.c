@@ -86,7 +86,8 @@ static void init_preload() {
 
   char log_path[MAX_PATH];
 
-  sprintf(log_path, "%s/%s-%s%s", cwd, "cnpv",program_invocation_short_name, ".log");
+  sprintf(log_path, "%s/%s-%s%s", cwd, "cnpv", program_invocation_short_name,
+          ".log");
 
 #ifdef DEBUG_FILE
 
@@ -98,7 +99,7 @@ static void init_preload() {
     fprintf(stdout, "open/create log file error");
     exit(-1);
   }
-#endif  
+#endif
 
   getenv_options();
 
@@ -154,10 +155,6 @@ static int handle_request(void *data) {
     else
       return real_call.real_openat64(args->dirfd, args->pathname, args->flags);
   }
-  // case FOPEN: {
-  //   log_debug(level, "handle fopen");
-  //   return real_call.real_fopen(args->pathname, args->f_mode);
-  // }
   default: {
     log_err("undefined type!");
     errno = 134;
@@ -231,6 +228,4 @@ FILE *fopen(const char *pathname, const char *mode) {
     return NULL;
   }
   return real_call.real_fopen(pathname, mode);
-  // struct handle_args data = {.pathname = pathname, .f_mode = mode, .type =
-  // FOPEN}; return handle_request(&data);
 }

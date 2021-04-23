@@ -23,7 +23,7 @@ void cache_init() {
 }
 
 void cache_insert(const char *key, const char *value) {
-  log_info("cache inseert key: %s , cache value: %s", key, value);
+  log_info("cache insert key: %s , cache value: %s", key, value);
   copy_key_val(cache, key, value);
 }
 

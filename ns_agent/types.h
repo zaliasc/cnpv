@@ -6,7 +6,7 @@
 
 // logs
 #define LOG_INFO
-// #define LOG_DEBUG
+#define LOG_DEBUG
 #define LOG_WARN
 #define LOG_ERR
 #define LOG_FATAL
