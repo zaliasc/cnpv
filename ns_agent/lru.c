@@ -3,9 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-// ------------------------------------------
 // private functions
-// ------------------------------------------
 // MurmurHash2, by Austin Appleby
 // http://sites.google.com/site/murmurhash/
 uint32_t lruc_hash(lruc *cache, void *key, uint32_t key_length) {
@@ -137,9 +135,7 @@ lruc_item *lruc_pop_or_create_item(lruc *cache) {
     return LRUC_PTHREAD_ERROR;                                                 \
   }
 
-// ------------------------------------------
 // public api
-// ------------------------------------------
 lruc *lruc_new(uint64_t cache_size, uint32_t average_length) {
   // create the cache
   lruc *cache = (lruc *)calloc(sizeof(lruc), 1);

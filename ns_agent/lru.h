@@ -5,9 +5,7 @@
 #include <stdint.h>
 #include <time.h>
 
-// ------------------------------------------
 // errors
-// ------------------------------------------
 typedef enum {
     LRUC_NO_ERROR = 0,
     LRUC_MISSING_CACHE,
@@ -17,9 +15,7 @@ typedef enum {
     LRUC_VALUE_TOO_LARGE
 } lruc_error;
 
-// ------------------------------------------
 // types
-// ------------------------------------------
 typedef struct {
     void *value;
     void *key;
@@ -41,9 +37,7 @@ typedef struct {
     pthread_mutex_t *mutex;
 } lruc;
 
-// ------------------------------------------
 // api
-// ------------------------------------------
 lruc *lruc_new(uint64_t cache_size, uint32_t average_length);
 lruc_error lruc_free(lruc *cache);
 lruc_error lruc_set(lruc *cache, void *key, uint32_t key_length, void *value, uint32_t value_length);

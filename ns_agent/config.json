@@ -20,7 +20,6 @@
     {"PATH": "/home/zhuzhicheng/project/cnpv/perf_test/flame.sh", "AUTHORITY": "wr"}
   ],
   "nginx":[
-    {"PATH": "/home/zhuzhicheng/project/nginx_file/index.html", "AUTHORITY": "wr"},
-    {"PATH": "", "AUTHORITY": ""}
+    {"PATH": "/home/zhuzhicheng/project/nginx_file/index.html", "AUTHORITY": "wr"}
   ]
 }
