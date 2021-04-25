@@ -8,10 +8,28 @@ Container network permission virtualization
 ```
 cd ns_agent
 make all
-# 是否使用cache 是否打印日志 在 ns_agent/type.h 中配置
 ```
 
 生成`agent.so` 动态库，`LD_PRELOAD`到应用程序
+
+日志、cache相关配置在ns_agent/types.h中修改
+
+```
+// logs 日志级别控制
+#define LOG_INFO
+#define LOG_DEBUG
+#define LOG_WARN
+#define LOG_ERR
+#define LOG_FATAL
+
+#define DEBUG_FILE //打印日志到文件
+// #define DEBUG_STDOUT //打印日志到stdout 和 打印到文件 不能同时选择
+
+// 是否开启cache
+#define USE_CACHE
+```
+
+
 
 #### 配置文件
 
@@ -42,6 +60,3 @@ make all
 CNPV_PATH=$PWD/config.json LD_PRELOAD=$PWD/agent.so nginx
 #生成的日志在当前目录下 命名格式为cnpv-nginx.log
 ```
-
-
-
