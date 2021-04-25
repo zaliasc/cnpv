@@ -2,6 +2,7 @@
 *.out
 *.so
 kern_test
+kern_module
 *.data
 *.data.old
 *.perf

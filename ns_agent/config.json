@@ -5,9 +5,7 @@
     {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/config.c", "AUTHORITY": "f"}
   ],
   "open":[
-    {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/check.h", "AUTHORITY": "wr"},
-    {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/agent.c", "AUTHORITY": "wr"},
-    {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/config.c", "AUTHORITY": "wr"}
+    {"PATH": "/home/zhuzhicheng/project/nginx_file/js/", "AUTHORITY": "F"}
   ],
   "test":[
     {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/check.h", "AUTHORITY": "w"},
@@ -22,6 +20,7 @@
     {"PATH": "/home/zhuzhicheng/project/cnpv/perf_test/flame.sh", "AUTHORITY": "wr"}
   ],
   "nginx":[
-    {"PATH": "/home/zhuzhicheng/project/nginx_file/index.html", "AUTHORITY": "wr"}
+    {"PATH": "/home/zhuzhicheng/project/nginx_file/index.html", "AUTHORITY": "wr"},
+    {"PATH": "", "AUTHORITY": ""}
   ]
 }

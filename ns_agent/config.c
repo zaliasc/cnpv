@@ -1,3 +1,4 @@
+#include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -16,6 +17,8 @@ extern char *config_path;
 
 // hashmap
 struct hashmap *map;
+
+struct user user_t = {.pathname = {0}};
 
 int user_compare(const void *a, const void *b, void *udata) {
   const struct user *ua = a;
@@ -46,6 +49,30 @@ int get_mode_value(const char *s) {
   return ret;
 }
 
+void get_dir_content(char *path, int permission) {
+  log_debug("process dir path");
+  DIR *d = opendir(path);
+  if (d == NULL)
+    return;
+  struct dirent *dir;
+  while ((dir = readdir(d)) != NULL) {
+    // if the type is not directory just print
+    if (dir->d_type != DT_DIR) {
+      sprintf(user_t.pathname, "%s%s", path, dir->d_name);
+      user_t.permission = permission;
+      hashmap_set(map, &user_t);
+      log_debug("%s%s\n", path, dir->d_name);
+    } else if (dir->d_type == DT_DIR && strcmp(dir->d_name, ".") != 0 &&
+               strcmp(dir->d_name, "..") != 0) {
+      // if it is a directory
+      char d_path[512];
+      sprintf(d_path, "%s%s", path, dir->d_name);
+      get_dir_content(d_path, permission);
+    }
+  }
+  closedir(d);
+}
+
 static void process_pair(json_value *pair) {
   if (pair->type != json_object) {
     log_err("parse pair failed");
@@ -64,7 +91,12 @@ static void process_pair(json_value *pair) {
     }
   }
 
-  hashmap_set(map, &tmp);
+  if (tmp.pathname[strlen(tmp.pathname) - 1] == '/') {
+    // dir
+    get_dir_content(tmp.pathname, tmp.permission);
+  } else {
+    hashmap_set(map, &tmp);
+  }
 }
 
 static void process_array(json_value *array) {
