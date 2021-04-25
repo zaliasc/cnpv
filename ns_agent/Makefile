@@ -45,6 +45,10 @@ fopen : test_fopen.c
 	gcc -g test_fopen.c -o fopen
 	# LD_PRELOAD=./agent.so ./open
 
+cache : test_cache. lru.c cache.c
+	gcc test_cache.c lru.c cache.c -o cache
+	# LD_PRELOAD=./agent.so ./cache
+
 clean :
 	rm -rf *.o *.out *.so open openat fopen *.log
 

@@ -50,4 +50,4 @@ lruc_error lruc_set(lruc *cache, void *key, uint32_t key_length, void *value, ui
 lruc_error lruc_get(lruc *cache, void *key, uint32_t key_length, void **value);
 lruc_error lruc_delete(lruc *cache, void *key, uint32_t key_length);
 
-#endif // LOG_H
+#endif  // LOG_H

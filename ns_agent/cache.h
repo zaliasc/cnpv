@@ -4,8 +4,9 @@
 #include "log.h"
 #include "lru.h"
 
-#define CACHE_SIZE (8 * 1024)  // 8k
-#define AVG_SIZE (2 * 1024)    // 2k
+// cache count = 64
+#define CACHE_SIZE (64 * 1024)  // 64k
+#define AVG_SIZE (1024)         // 1k
 
 void cache_init();
 
@@ -13,4 +14,4 @@ void cache_insert(const char* key, const char* value);
 
 void cache_get(char* key, char** ret);
 
-#endif // CACHE_H
+#endif  // CACHE_H
