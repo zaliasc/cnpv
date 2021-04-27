@@ -4,7 +4,7 @@
 // #include <stdint.h>
 #include <linux/stddef.h>
 #include <linux/slab.h>
-#include "hashmap.h"
+#include "map.h"
 
 static void *(*_malloc)(size_t) = kmalloc;
 static void (*_free)(void *) = kfree;

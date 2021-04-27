@@ -1,11 +1,11 @@
 #include "json.h"
 
-// #ifdef _MSC_VER
-//    #ifndef _CRT_SECURE_NO_WARNINGS
-//       #define _CRT_SECURE_NO_WARNINGS
-//    #endif
-//    #include <stdint.h>
-// #endif
+#ifdef _MSC_VER
+   #ifndef _CRT_SECURE_NO_WARNINGS
+      #define _CRT_SECURE_NO_WARNINGS
+   #endif
+   #include <stdint.h>
+#endif
 
 const struct _json_value json_value_none;
 
