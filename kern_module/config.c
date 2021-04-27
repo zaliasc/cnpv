@@ -70,48 +70,16 @@ void config_init(void) {
     return -1;
   }
   pos = 0;
-  // vfs_write(fp, buf, sizeof(buf), &pos);
-  // pos = 0;
+
   vfs_read(fp, file_contents, file_size, &pos);
   printk("read: %s/n", file_contents);
   filp_close(fp, NULL);
 
   set_fs(fs);
 
-  // int fd;
-  // struct stat filestatus;
-  // int file_size;
-  // char *file_contents;
   json_char *json;
+
   json_value *value;
-
-  // if (stat(config_path, &filestatus) != 0) {
-  //   log_err("File %s not found", config_path);
-  //   exit(-1);
-  // }
-
-  // file_size = filestatus.st_size;
-  // file_contents = (char *)malloc(filestatus.st_size);
-  // if (file_contents == NULL) {
-  //   log_err("Memory error: unable to allocate %d bytes", file_size);
-  //   exit(-1);
-  // }
-
-  // fd = open(config_path, O_RDONLY);
-  // if (fd == 0) {
-  //   log_err("Unable to open %s", config_path);
-  //   free(file_contents);
-  //   exit(-1);
-  // }
-  // if (read(fd, file_contents, file_size) == -1) {
-  //   log_err("Unable t read content of %s", config_path);
-  //   close(fd);
-  //   free(file_contents);
-  //   exit(-1);
-  // }
-  // close(fd);
-
-  // printf("%s\n", file_contents);
 
   json = (json_char *)file_contents;
 

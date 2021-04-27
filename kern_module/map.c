@@ -1,7 +1,4 @@
-// #include <stdio.h>
 #include <linux/string.h>
-// #include <linux/stdlib.h>
-// #include <stdint.h>
 #include "map.h"
 #include <linux/slab.h>
 #include <linux/stddef.h>

@@ -3,9 +3,6 @@
 
 #include <linux/stddef.h>
 #include <linux/types.h>
-// #include <stdbool.h>
-// #include <stddef.h>
-// #include <stdint.h>
 #include <linux/printk.h>
 
 typedef unsigned long size_t;
