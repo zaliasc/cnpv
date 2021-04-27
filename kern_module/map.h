@@ -8,7 +8,7 @@
 // #include <stdint.h>
 
 typedef unsigned long size_t;
-typedef unsigned long uint64_t;
+// typedef unsigned long uint64_t;
 
 struct hashmap;
 
