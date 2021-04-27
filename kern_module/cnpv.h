@@ -6,7 +6,7 @@
 #include <linux/module.h>
 #include <linux/printk.h>
 #include <linux/syscalls.h>
-// #include <linux/pid>
+#include <linux/pid>
 #include <linux/unistd.h>
 
 #define STORE_SYSCALLPTR(table, name) sys_##name##_ptr = (void *)table[__NR_##name]

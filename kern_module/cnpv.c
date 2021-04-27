@@ -7,21 +7,20 @@ MODULE_DESCRIPTION("Hook sys_call_open by change sys_open entry");
  */
 void set_addr_rw(unsigned long addr) {
 
-	unsigned int level;
-	pte_t *pte = lookup_address(addr, &level);
+  unsigned int level;
+  pte_t *pte = lookup_address(addr, &level);
 
-	if (pte->pte &~ _PAGE_RW) pte->pte |= _PAGE_RW;
-
+  if (pte->pte & ~_PAGE_RW)
+    pte->pte |= _PAGE_RW;
 }
 
 /* Restores the sys_call_table as read-only */
 void set_addr_ro(unsigned long addr) {
 
-	unsigned int level;
-	pte_t *pte = lookup_address(addr, &level);
+  unsigned int level;
+  pte_t *pte = lookup_address(addr, &level);
 
-	pte->pte = pte->pte &~_PAGE_RW;
-
+  pte->pte = pte->pte & ~_PAGE_RW;
 }
 
 unsigned long **acquire_syscall_table(void) {
@@ -38,8 +37,18 @@ asmlinkage int my_open(const char __user *pathname, int flags, mode_t mode) {
   memset(user_msg, 0, sizeof(user_msg));
   copied = strncpy_from_user(user_msg, pathname, sizeof(user_msg));
   printk("%s\n", __FUNCTION__);
-  // printk("copied:%ld\n", copied);
-  printk("pathname%s\n", user_msg);
+  printk("copied : %ld\n", copied);
+  printk("pathname : %s\n", user_msg);
+
+  struct pid *ppid;      //定义pid结构指针
+  struct task_struct *p; //定义进程控制块指针
+  struct task_struct *pos;
+
+  ppid = find_get_pid(
+      _pid); //_pid是用户空间传入的进程号，该函数根据进程号找到对应pid struct
+  p = pid_task(ppid, PIDTYPE_PID); //根据pid struct找到对应进程控制块
+  printk(KERN_INFO "%s", p->comm);
+
   printk("------\n");
 
   return (*real_open)(pathname, flags, mode);
