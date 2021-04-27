@@ -1,4 +1,4 @@
-CFLAGS= := -std=gnu99 -Wno-declaration-after-statement
+ccflags-y := -std=gnu99 -Wno-declaration-after-statement
 
 obj-m += cnpv.o map.o json.o
 
