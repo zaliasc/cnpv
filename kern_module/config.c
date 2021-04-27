@@ -3,10 +3,10 @@
 #include <linux/kernel.h>
 #include <linux/printk.h>
 #include <linux/sched.h>
+#include <linux/slab.h>
+#include <linux/stat.h>
 #include <linux/uaccess.h>
 #include <linux/unistd.h>
-#include <linux/stat.h>
-#include <linux/slab.h>
 
 #include "json.h"
 #include "log.h"
@@ -53,7 +53,7 @@ static void process_root(json_value *root) {
 char config_path[] = "/home/zhuzhicheng/project/cnpv/ns_agent/config.json";
 
 void config_init(void) {
-  mm_segment_t fs;
+  mm_segment_t old_fs;
   loff_t pos;
   old_fs = get_fs();
   set_fs(KERNEL_DS);
@@ -61,15 +61,15 @@ void config_init(void) {
   struct kstat stat;
   int res = vfs_stat((const char __user *)config_path, &stat);
   int file_size = (int)stat.size;
-  char * file_contents = (char *)kmalloc(file_size, GFP_KERNEL);
+  char *file_contents = (char *)kmalloc(file_size, GFP_KERNEL);
 
-  printk("file: %s/n  file_size: %d/n file contents: %s", config_path, file_size, file_contents);
+  printk("file: %s/n  file_size: %d/n file contents: %s", config_path,
+         file_size, file_contents);
 
   struct file *fp;
   fp = filp_open(config_path, O_RDWR | O_CREAT, 0644);
   if (IS_ERR(fp)) {
     printk("create file error/n");
-    return -1;
   }
   pos = 0;
 
