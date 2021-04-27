@@ -6,7 +6,7 @@ const struct _json_value json_value_none;
 #include <linux/string.h>
 
 typedef unsigned int json_uchar;
-#define __INT64_C(c) c##L
+// #define __INT64_C(c) c##L
 #define INT8_MAX (127)
 #define INT16_MAX (32767)
 #define INT32_MAX (2147483647)

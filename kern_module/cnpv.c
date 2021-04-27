@@ -3,6 +3,8 @@
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Hook sys_call_open by change sys_open entry");
 
+extern void config_init();
+
 /* The sys_call_table is read-only => must make it RW before replacing a syscall
  */
 void set_addr_rw(unsigned long addr) {
@@ -60,6 +62,8 @@ static int __init open_hook_init(void) {
   set_addr_ro((unsigned long)syscall_table);
 
   printk(KERN_INFO "starting intercept\n");
+
+  config_init();
 
   return 0;
 }
