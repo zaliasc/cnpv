@@ -9,12 +9,11 @@
 #include <linux/slab.h>
 
 #include "json.h"
-#include "config.h"
+#include "log.h"
 
 static void process_pair(json_value *pair) {
   if (pair->type != json_object) {
     log_err("parse pair failed");
-    exit(-1);
   }
 
   for (int i = 0; i < pair->u.array.length; i++) {
@@ -29,7 +28,6 @@ static void process_pair(json_value *pair) {
 static void process_array(json_value *array) {
   if (array->type != json_array) {
     log_err("parse array failed");
-    exit(-1);
   }
 
   for (int i = 0; i < array->u.array.length; i++) {
@@ -40,7 +38,6 @@ static void process_array(json_value *array) {
 static void process_root(json_value *root) {
   if (root->type != json_object) {
     log_err("parse root failed");
-    exit(-1);
   }
 
   for (int i = 0; i < root->u.object.length; i++) {
@@ -55,7 +52,7 @@ static void process_root(json_value *root) {
 
 char config_path[] = "/home/zhuzhicheng/project/cnpv/ns_agent/config.json";
 
-void config_init() {
+void config_init(void) {
   mm_segment_t fs;
   loff_t pos;
   fs = get_fs();
@@ -63,8 +60,8 @@ void config_init() {
 
   struct kstat stat;
   int res = vfs_stat((const char __user *)config_path, &stat);
-  int file_size = stat.st_size;
-  char * file_contents = (char *)kmalloc(filestatus.st_size, GFP_KERNEL);
+  int file_size = (int)stat.size;
+  char * file_contents = (char *)kmalloc(file_size, GFP_KERNEL);
 
   struct file *fp;
   fp = filp_open(config_path, O_RDWR | O_CREAT, 0644);
@@ -126,5 +123,5 @@ void config_init() {
   }
   process_root(value);
   json_value_free(value);
-  free(file_contents);
+  kfree(file_contents);
 }

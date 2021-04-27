@@ -1,11 +1,13 @@
 #include "cnpv.h"
-#include "config.h"
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Hook sys_call_open by change sys_open entry");
 
 /* The sys_call_table is read-only => must make it RW before replacing a syscall
  */
+
+extern void config_init(void);
+
 void set_addr_rw(unsigned long addr) {
 
   unsigned int level;
