@@ -59,7 +59,7 @@ void config_init(void) {
   fp = filp_open(config_path, O_RDWR | O_CREAT, 0644);
   if (IS_ERR(fp)) {
     printk("create file error/n");
-    return -1;
+    return ;
   }
   pos = 0;
   vfs_read(fp, file_contents, file_size, &pos);

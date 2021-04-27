@@ -1,4 +1,4 @@
-obj-m += cnpv.o json.o config.o
+obj-m += cnpv.o json.o
 
 ccflags-y := -std=gnu99 -Wno-declaration-after-statement -Wno-unused-function
 
