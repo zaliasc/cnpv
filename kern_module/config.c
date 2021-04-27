@@ -125,3 +125,5 @@ void config_init(void) {
   json_value_free(value);
   kfree(file_contents);
 }
+
+EXPORT_SYMBOL(config_init);
