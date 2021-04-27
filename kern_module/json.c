@@ -1,20 +1,21 @@
 #include "json.h"
 
-#ifdef _MSC_VER
-   #ifndef _CRT_SECURE_NO_WARNINGS
-      #define _CRT_SECURE_NO_WARNINGS
-   #endif
-   #include <stdint.h>
-#endif
-
 const struct _json_value json_value_none;
 
 // #include <stdio.h>
 #include <linux/string.h>
+
 // #include <linux/ctype.h>
 // #include <math.h>
+// #include <types.h>
+// #include <stdint.h>
 
 typedef unsigned int json_uchar;
+#  define __INT64_C(c)	c ## L
+# define INT8_MAX		(127)
+# define INT16_MAX		(32767)
+# define INT32_MAX		(2147483647)
+# define INT64_MAX		(__INT64_C(9223372036854775807))
 
 /* There has to be a better way to do this */
 static const json_int_t JSON_INT_MAX = sizeof(json_int_t) == 1
