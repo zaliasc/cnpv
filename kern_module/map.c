@@ -7,11 +7,14 @@
 #include <linux/types.h>
 #include "map.h"
 
-static void *(*_malloc)(size_t) = &kmalloc;
-static void (*_free)(void *) = &kfree;
+static void *(*_malloc)(size_t) = NULL;
+static void (*_free)(void *) = NULL;
 
-#define hmmalloc (_malloc?_malloc:malloc)
-#define hmfree (_free?_free:free)
+// #define hmmalloc (_malloc?_malloc:malloc)
+// #define hmfree (_free?_free:free)
+
+#define hmmalloc(buf) kmalloc(buf, GFP_KERNEL);
+#define hmfree(buf) kfree(buf);
 
 // hashmap_set_allocator allows for configuring a custom allocator for
 // all hashmap library operations. This function, if needed, should be called
