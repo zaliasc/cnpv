@@ -7,8 +7,8 @@
 #include <linux/types.h>
 #include "map.h"
 
-static void *(*_malloc)(size_t) = kmalloc;
-static void (*_free)(void *) = kfree;
+static void *(*_malloc)(size_t) = &kmalloc;
+static void (*_free)(void *) = &kfree;
 
 #define hmmalloc (_malloc?_malloc:malloc)
 #define hmfree (_free?_free:free)

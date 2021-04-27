@@ -6,6 +6,7 @@
 // #include <stdbool.h>
 // #include <stddef.h>
 // #include <stdint.h>
+#include <linux/printk.h>
 
 typedef unsigned long size_t;
 // typedef unsigned long uint64_t;
