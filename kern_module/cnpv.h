@@ -1,5 +1,5 @@
-#ifndef _SYSCALL_INTERCEPT_H_
-#define _SYSCALL_INTERCEPT_H_
+#ifndef CNPV_H
+#define CNPV_H
 
 #include <linux/init.h>
 #include <linux/kernel.h>

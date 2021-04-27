@@ -41,16 +41,6 @@ asmlinkage int my_open(const char __user *pathname, int flags, mode_t mode) {
   printk("pathname : %s\n", user_msg);
   printk("%s (pid=%d, comm=%s)\n", __func__, current->pid, current->comm);
 
-  // struct pid *ppid;      //定义pid结构指针
-  // struct task_struct *p; //定义进程控制块指针
-  // struct task_struct *pos;
-
-  // ppid = current->pid;
-
-  // ppid = find_get_pid(
-  //     _pid); //_pid是用户空间传入的进程号，该函数根据进程号找到对应pid struct
-  // p = pid_task(ppid, PIDTYPE_PID); //根据pid struct找到对应进程控制块
-
   printk("------\n");
 
   return (*real_open)(pathname, flags, mode);
