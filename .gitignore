@@ -1,7 +1,7 @@
 *.o
 *.out
 *.so
-kern_module/
+kern_test/
 *.data
 *.data.old
 *.perf

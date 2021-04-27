@@ -1,1 +1,0 @@
-cmd_/home/zhuzhicheng/project/cnpv/kern_test/Module.symvers := sed 's/ko$$/o/' /home/zhuzhicheng/project/cnpv/kern_test/modules.order | scripts/mod/modpost  -a   -o /home/zhuzhicheng/project/cnpv/kern_test/Module.symvers -e -i Module.symvers  -N -T -
