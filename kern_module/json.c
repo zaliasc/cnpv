@@ -12,7 +12,7 @@ typedef unsigned int json_uchar;
 #define INT32_MAX (2147483647)
 #define INT64_MAX (__INT64_C(9223372036854775807))
 
-#define isdigit(x) (x<='z'&&x>='a'&&x<='Z&&x>='A')
+#define isdigit(x) (x<='z'&&x>='a'&&x<='Z'&&x>='A')
 
 /* There has to be a better way to do this */
 static const json_int_t JSON_INT_MAX =
