@@ -28,7 +28,7 @@ void hashmap_set_allocator(void *(*malloc)(size_t), void (*free)(void *)) {
 #define panic(_msg_)                                                           \
   {                                                                            \
     printk("panic: %s (%s:%d)\n", (_msg_), __FILE__, __LINE__);                \
-    printk("error")                                                            \
+    printk("error");                                                           \
   }
 
 struct bucket {
@@ -809,7 +809,7 @@ static void all() {
 
   if (total_allocs != 0) {
     fprintf(stderr, "total_allocs: expected 0, got %lu\n", total_allocs);
-    printk("error")
+    printk("error");
   }
 }
 
@@ -899,7 +899,7 @@ static void benchmarks() {
 
   if (total_allocs != 0) {
     fprintf(stderr, "total_allocs: expected 0, got %lu\n", total_allocs);
-    printk("error")
+    printk("error");
   }
 }
 
