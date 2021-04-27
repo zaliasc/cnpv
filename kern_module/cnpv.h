@@ -1,15 +1,20 @@
 #ifndef CNPV_H
 #define CNPV_H
 
+#include <linux/fs.h>
 #include <linux/init.h>
-#include <linux/kernel.h>
 #include <linux/module.h>
+#include <linux/kernel.h>
 #include <linux/printk.h>
-#include <linux/syscalls.h>
 #include <linux/sched.h>
+#include <linux/syscalls.h>
+#include <linux/uaccess.h>
 #include <linux/unistd.h>
+#include <linux/stat.h>
+#include <linux/slab.h>
 
 #include "json.h"
+#include "log.h"
 
 #define STORE_SYSCALLPTR(table, name) sys_##name##_ptr = (void *)table[__NR_##name]
 #define REPLACE_SYSCALL(table, name) table[__NR_##name] = (void *)my_##name
