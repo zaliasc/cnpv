@@ -1,8 +1,8 @@
 *.o
 *.out
 *.so
-kern_test/
 *.data
 *.data.old
 *.perf
 *.folded
+kern_test/
