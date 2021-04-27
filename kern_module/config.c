@@ -58,9 +58,9 @@ void config_init(void) {
   int file_size;
   char *file_contents;
 
-  file_contents = load_file(config_path, file_size);
+  file_contents = load_file(config_path, &file_size);
 
-  printk("file: %s/n  file_size: %d/n file contents: %s", config_path,
+  printk(" file: %s\n file_size: %d\n file contents: %s", config_path,
          file_size, file_contents);
 
   // json_char *json;
@@ -77,5 +77,5 @@ void config_init(void) {
   // }
   // process_root(value);
   // json_value_free(value);
-  kfree(file_contents);
+  // kfree(file_contents);
 }
