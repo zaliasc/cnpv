@@ -2,13 +2,9 @@
 
 const struct _json_value json_value_none;
 
-// #include <stdio.h>
 #include <linux/string.h>
-
-// #include <linux/ctype.h>
-// #include <math.h>
-// #include <types.h>
-// #include <stdint.h>
+#include <linux/slab.h>
+#include <stdint.h>
 
 typedef unsigned int json_uchar;
 #  define __INT64_C(c)	c ## L
@@ -64,12 +60,13 @@ typedef struct
 
 static void * default_alloc (size_t size, int zero, void * user_data)
 {
-   return zero ? calloc (1, size) : malloc (size);
+   return kmalloc(size, GFP_KERNEL);
+  //  return zero ? calloc (1, size) : malloc (size);
 }
 
 static void default_free (void * ptr, void * user_data)
 {
-   free (ptr);
+   kfree (ptr);
 }
 
 static void * json_alloc (json_state * state, unsigned long size, int zero)
@@ -716,128 +713,6 @@ json_value * json_parse_ex (json_settings * settings,
                      goto e_failed;
                };
 
-               break;
-
-            case json_integer:
-            case json_double:
-
-               if (isdigit (b))
-               {
-                  ++ num_digits;
-
-                  if (top->type == json_integer || flags & flag_num_e)
-                  {
-                     if (! (flags & flag_num_e))
-                     {
-                        if (flags & flag_num_zero)
-                        {  sprintf (error, "%d:%d: Unexpected `0` before `%c`", line_and_col, b);
-                           goto e_failed;
-                        }
-
-                        if (num_digits == 1 && b == '0')
-                           flags |= flag_num_zero;
-                     }
-                     else
-                     {
-                        flags |= flag_num_e_got_sign;
-                        num_e = (num_e * 10) + (b - '0');
-                        continue;
-                     }
-
-                     if (would_overflow(top->u.integer, b))
-                     {  -- num_digits;
-                        -- state.ptr;
-                        top->type = json_double;
-                        top->u.dbl = (double)top->u.integer;
-                        continue;
-                     }
-
-                     top->u.integer = (top->u.integer * 10) + (b - '0');
-                     continue;
-                  }
-
-                  if (flags & flag_num_got_decimal)
-                     num_fraction = (num_fraction * 10) + (b - '0');
-                  else
-                     top->u.dbl = (top->u.dbl * 10) + (b - '0');
-
-                  continue;
-               }
-
-               if (b == '+' || b == '-')
-               {
-                  if ( (flags & flag_num_e) && !(flags & flag_num_e_got_sign))
-                  {
-                     flags |= flag_num_e_got_sign;
-
-                     if (b == '-')
-                        flags |= flag_num_e_negative;
-
-                     continue;
-                  }
-               }
-               else if (b == '.' && top->type == json_integer)
-               {
-                  if (!num_digits)
-                  {  sprintf (error, "%d:%d: Expected digit before `.`", line_and_col);
-                     goto e_failed;
-                  }
-
-                  top->type = json_double;
-                  top->u.dbl = (double) top->u.integer;
-
-                  flags |= flag_num_got_decimal;
-                  num_digits = 0;
-                  continue;
-               }
-
-               if (! (flags & flag_num_e))
-               {
-                  if (top->type == json_double)
-                  {
-                     if (!num_digits)
-                     {  sprintf (error, "%d:%d: Expected digit after `.`", line_and_col);
-                        goto e_failed;
-                     }
-
-                     top->u.dbl += num_fraction / pow (10.0, num_digits);
-                  }
-
-                  if (b == 'e' || b == 'E')
-                  {
-                     flags |= flag_num_e;
-
-                     if (top->type == json_integer)
-                     {
-                        top->type = json_double;
-                        top->u.dbl = (double) top->u.integer;
-                     }
-
-                     num_digits = 0;
-                     flags &= ~ flag_num_zero;
-
-                     continue;
-                  }
-               }
-               else
-               {
-                  if (!num_digits)
-                  {  sprintf (error, "%d:%d: Expected digit after `e`", line_and_col);
-                     goto e_failed;
-                  }
-
-                  top->u.dbl *= pow (10.0, (flags & flag_num_e_negative ? - num_e : num_e));
-               }
-
-               if (flags & flag_num_negative)
-               {
-                  if (top->type == json_integer)
-                     top->u.integer = - top->u.integer;
-                  else
-                     top->u.dbl = - top->u.dbl;
-               }
-
-               flags |= flag_next | flag_reproc;
                break;
 
             default:
