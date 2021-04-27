@@ -65,7 +65,7 @@ static int __init open_hook_init(void) {
 
   printk(KERN_INFO "starting intercept\n");
 
-  config_init();
+  // config_init();
 
   return 0;
 }

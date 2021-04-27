@@ -1,14 +1,10 @@
-#include <linux/string.h>
 #include "map.h"
 #include <linux/slab.h>
 #include <linux/stddef.h>
-#include <linux/types.h>
+#include <linux/string.h>
 
 static void *(*_malloc)(size_t) = NULL;
 static void (*_free)(void *) = NULL;
-
-// #define hmmalloc (_malloc?_malloc:malloc)
-// #define hmfree (_free?_free:free)
 
 #define hmmalloc(buf) kmalloc(buf, GFP_KERNEL);
 #define hmfree(buf) kfree(buf);
@@ -23,10 +19,7 @@ void hashmap_set_allocator(void *(*malloc)(size_t), void (*free)(void *)) {
 }
 
 #define panic(_msg_)                                                           \
-  {                                                                            \
-    printk("panic: %s (%s:%d)\n", (_msg_), __FILE__, __LINE__);                \
-    printk("error");                                                           \
-  }
+  { printk("panic: %s (%s:%d)\n", (_msg_), __FILE__, __LINE__); }
 
 struct bucket {
   uint64_t hash : 48;
@@ -124,8 +117,8 @@ hashmap_new(size_t elsize, size_t cap, uint64_t seed0, uint64_t seed1,
     return NULL;
   }
   memset(map->buckets, 0, map->bucketsz * map->nbuckets);
-  map->growat = map->nbuckets * 0.75;
-  map->shrinkat = map->nbuckets * 0.10;
+  map->growat = map->nbuckets * 3 / 4;
+  map->shrinkat = map->nbuckets / 10;
   return map;
 }
 
@@ -147,8 +140,8 @@ void hashmap_clear(struct hashmap *map, bool update_cap) {
   }
   memset(map->buckets, 0, map->bucketsz * map->nbuckets);
   map->mask = map->nbuckets - 1;
-  map->growat = map->nbuckets * 0.75;
-  map->shrinkat = map->nbuckets * 0.10;
+  map->growat = map->nbuckets * 3 / 4;
+  map->shrinkat = map->nbuckets / 10;
 }
 
 static bool resize(struct hashmap *map, size_t new_cap) {
