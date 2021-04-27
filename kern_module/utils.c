@@ -66,10 +66,10 @@ int file_size(const char *filename) {
   return ret;
 }
 
-char *load_file(char *filename, int *file_size) {
+char *load_file(char *filename, int *filesize) {
   *filesize = file_size(filename);
-  char *buf = kmalloc(filesize, GFP_KERNEL);
+  char *buf = kmalloc(* filesize, GFP_KERNEL);
   struct file *f = file_open(filename, O_RDONLY, 0);
-  file_read(f, buf, content, file_size);
+  file_read(f, 0, buf, filesize);
   return buf;
 }
