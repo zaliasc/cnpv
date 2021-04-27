@@ -51,39 +51,25 @@ int file_sync(struct file *file) {
   return 0;
 }
 
-char *load_file(char *filename, int *input_size) {
-  struct kstat *stat;
-  struct file *fp;
-  mm_segment_t fs;
-  loff_t pos = 0;
-  char *buf;
+int file_size(const char *filename) {
+  mm_segment_t oldfs;
+  int ret;
 
-  fp = filp_open(filename, O_RDWR, 0644);
-  if (IS_ERR(fp)) {
-    printk("Open file error!\n");
-    return ERR_PTR(-ENOENT);
-  }
+  oldfs = get_fs();
+  set_fs(get_ds());
 
-  fs = get_fs();
-  set_fs(KERNEL_DS);
+  struct kstat stat;
+  vfs_stat(filename, &stat);
+  ret = (int)stat.size;
 
-  stat = (struct kstat *)kmalloc(sizeof(struct kstat), GFP_KERNEL);
-  if (!stat)
-    return ERR_PTR(-ENOMEM);
+  set_fs(oldfs);
+  return ret;
+}
 
-  vfs_stat(filename, stat);
-  *input_size = stat->size;
-
-  buf = kmalloc(*input_size, GFP_KERNEL);
-  if (!buf) {
-    kfree(stat);
-    printk("malloc input buf error!\n");
-    return ERR_PTR(-ENOMEM);
-  }
-  kernel_read(fp, buf, *input_size, &pos);
-
-  filp_close(fp, NULL);
-  set_fs(fs);
-  kfree(stat);
+char *load_file(char *filename, int *file_size) {
+  *filesize = file_size(filename);
+  char *buf = kmalloc(filesize, GFP_KERNEL);
+  struct file *f = file_open(filename, O_RDONLY, 0);
+  file_read(f, buf, content, file_size);
   return buf;
 }

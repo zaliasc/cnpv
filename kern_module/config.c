@@ -77,5 +77,5 @@ void config_init(void) {
   // }
   // process_root(value);
   // json_value_free(value);
-  // kfree(file_contents);
+  kfree(file_contents);
 }
