@@ -3,8 +3,6 @@
 
 typedef unsigned long size_t;
 
-typedef long int64_t;
-
 #define json_int_t int64_t
 
 #ifndef json_char
