@@ -9,6 +9,7 @@
 #include <linux/slab.h>
 
 #include "json.h"
+#include "config.h"
 
 static void process_pair(json_value *pair) {
   if (pair->type != json_object) {
