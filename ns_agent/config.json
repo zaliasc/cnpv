@@ -5,7 +5,7 @@
     {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/config.c", "AUTHORITY": "f"}
   ],
   "open":[
-    {"PATH": "/home/zhuzhicheng/project/nginx_file/js/", "AUTHORITY": "F"}
+    {"PATH": "/home/zhuzhicheng/project/nginx_file/js/", "AUTHORITY": "wr"}
   ],
   "test":[
     {"PATH": "/home/zhuzhicheng/project/cnpv/ns_agent/check.h", "AUTHORITY": "w"},

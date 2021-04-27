@@ -55,13 +55,15 @@ char config_path[] = "/home/zhuzhicheng/project/cnpv/ns_agent/config.json";
 void config_init(void) {
   mm_segment_t fs;
   loff_t pos;
-  fs = get_fs();
+  old_fs = get_fs();
   set_fs(KERNEL_DS);
 
   struct kstat stat;
   int res = vfs_stat((const char __user *)config_path, &stat);
   int file_size = (int)stat.size;
   char * file_contents = (char *)kmalloc(file_size, GFP_KERNEL);
+
+  printk("file: %s/n  file_size: %d/n file contents: %s", config_path, file_size, file_contents);
 
   struct file *fp;
   fp = filp_open(config_path, O_RDWR | O_CREAT, 0644);
@@ -75,23 +77,21 @@ void config_init(void) {
   printk("read: %s/n", file_contents);
   filp_close(fp, NULL);
 
-  set_fs(fs);
+  set_fs(old_fs);
 
-  json_char *json;
+  // json_char *json;
 
-  json_value *value;
+  // json_value *value;
 
-  json = (json_char *)file_contents;
+  // json = (json_char *)file_contents;
 
-  value = json_parse(json, file_size);
+  // value = json_parse(json, file_size);
 
-  if (value == NULL) {
-    log_err("Unable to parse config_file!");
-    kfree(file_contents);
-  }
-  process_root(value);
-  json_value_free(value);
+  // if (value == NULL) {
+  //   log_err("Unable to parse config_file!");
+  //   kfree(file_contents);
+  // }
+  // process_root(value);
+  // json_value_free(value);
   kfree(file_contents);
 }
-
-EXPORT_SYMBOL(config_init);
