@@ -1,0 +1,1 @@
+cmd_/home/zhuzhicheng/project/cnpv/kern_test/modules.order := {   echo /home/zhuzhicheng/project/cnpv/kern_test/lkm_example.ko; :; } | awk '!x[$$0]++' - > /home/zhuzhicheng/project/cnpv/kern_test/modules.order

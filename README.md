@@ -55,8 +55,8 @@ make all
 #### 使用方式
 
 ```
-#以配合nginx使用为例 
-#如下方式启动nginx
+#以配合nginx使用为例
+#现在配置文件中配置好 和 nginx 相关的文件限制，再如下方式启动nginx
 CNPV_PATH=$PWD/config.json LD_PRELOAD=$PWD/agent.so nginx
 #生成的日志在当前目录下 命名格式为cnpv-nginx.log
 ```

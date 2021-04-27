@@ -1,0 +1,1 @@
+cmd_/home/zhuzhicheng/project/cnpv/kern_test/lkm_example.ko := ld -r -m elf_x86_64 --build-id=sha1  -T scripts/module.lds -o /home/zhuzhicheng/project/cnpv/kern_test/lkm_example.ko /home/zhuzhicheng/project/cnpv/kern_test/lkm_example.o /home/zhuzhicheng/project/cnpv/kern_test/lkm_example.mod.o;  true
