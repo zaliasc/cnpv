@@ -1,5 +1,6 @@
 #include "json.h"
 #include "log.h"
+#include "types.h"
 #include <fcntl.h>
 #include <linux/netlink.h>
 #include <stdio.h>
@@ -8,7 +9,7 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <unistd.h>
-
+#include <dirent.h>
 #define NETLINK_USER 31
 
 #define MAX_PAYLOAD 1024 /* maximum payload size*/
@@ -17,6 +18,7 @@ struct nlmsghdr *nlh = NULL;
 struct iovec iov;
 int sock_fd;
 struct msghdr msg;
+struct user user_t;
 
 char config_path[] = "/home/zhuzhicheng/project/cnpv/ns_agent/config.json";
 
@@ -53,71 +55,109 @@ char *getfile_content() {
   printf("file_content: %s", file_contents);
 }
 
-// static void process_pair(json_value *pair) {
-//   if (pair->type != json_object) {
-//     log_err("parse pair failed");
-//     exit(-1);
-//   }
+void sendstr(const char *str);
 
-//   struct user tmp = {.pathname = {0}};
+void sendstruct(struct user *u);
 
-//   for (int i = 0; i < pair->u.array.length; i++) {
-//     if (!strcmp(pair->u.object.values[i].name, "PATH")) {
-//       strncpy(tmp.pathname, pair->u.object.values[i].value->u.string.ptr,
-//               MAX_PATH - 1);
-//     } else if (!strcmp(pair->u.object.values[i].name, "AUTHORITY")) {
-//       tmp.permission =
-//           get_mode_value(pair->u.object.values[i].value->u.string.ptr);
-//     }
-//   }
 
-//   if (tmp.pathname[strlen(tmp.pathname) - 1] == '/') {
-//     // dir
-//     get_dir_content(tmp.pathname, tmp.permission);
-//   } else {
-//     // hashmap_set(map, &tmp);
-//   }
-// }
+void get_dir_content(char *path, int permission) {
+  log_debug("process dir path");
+  DIR *d = opendir(path);
+  if (d == NULL)
+    return;
+  struct dirent *dir;
+  while ((dir = readdir(d)) != NULL) {
+    // if the type is not directory just print
+    if (dir->d_type != DT_DIR) {
+      sprintf(user_t.pathname, "%s%s", path, dir->d_name);
+      user_t.permission = permission;
+      sendstruct(&user_t);
+      log_debug("%s%s\n", path, dir->d_name);
+    } else if (dir->d_type == DT_DIR && strcmp(dir->d_name, ".") != 0 &&
+               strcmp(dir->d_name, "..") != 0) {
+      // if it is a directory
+      char d_path[512];
+      sprintf(d_path, "%s%s", path, dir->d_name);
+      get_dir_content(d_path, permission);
+    }
+  }
+  closedir(d);
+}
 
-// static void process_array(json_value *array) {
-//   if (array->type != json_array) {
-//     log_err("parse array failed");
-//     exit(-1);
-//   }
+int get_mode_value(const char *s) {
+  int ret = 0;
+  if (strstr(s, "F") || strstr(s, "f"))
+    ret = O_FORBIDDEN;
+  if (strstr(s, "R") || strstr(s, "r"))
+    ret |= O_READ;
+  if (strstr(s, "W") || strstr(s, "w"))
+    ret |= O_WRITE;
+  return ret;
+}
 
-//   for (int i = 0; i < array->u.array.length; i++) {
-//     process_pair(array->u.array.values[i]);
-//   }
-// }
+static void process_pair(json_value *pair) {
+  if (pair->type != json_object) {
+    log_err("parse pair failed");
+    exit(-1);
+  }
 
-// void json_process(char *file_contents, int file_size) {
-//   json_char *json;
-//   json_value *value;
-//   json = (json_char *)file_contents;
-//   value = json_parse(json, file_size);
+  struct user tmp = {.pathname = {0}};
 
-//   if (value == NULL) {
-//     log_err("Unable to parse config_file!");
-//     free(file_contents);
-//     exit(1);
-//   }
+  for (int i = 0; i < pair->u.array.length; i++) {
+    if (!strcmp(pair->u.object.values[i].name, "PATH")) {
+      strncpy(tmp.pathname, pair->u.object.values[i].value->u.string.ptr,
+              MAX_PATH - 1);
+    } else if (!strcmp(pair->u.object.values[i].name, "AUTHORITY")) {
+      tmp.permission =
+          get_mode_value(pair->u.object.values[i].value->u.string.ptr);
+    }
+  }
 
-//   if (value->type != json_object) {
-//     log_err("parse root failed");
-//     exit(-1);
-//   }
+  if (tmp.pathname[strlen(tmp.pathname) - 1] == '/') {
+    // dir
+    get_dir_content(tmp.pathname, tmp.permission);
+  } else {
+    sendstruct(&tmp);
+  }
+}
 
-//   for (int i = 0; i < value->u.object.length; i++) {
-//     // if (strstr(value->u.object.values[i].name,
-//     // program_invocation_short_name)) {
-//     process_array(value->u.object.values[i].value);
-//     // }
-//   }
+static void process_array(json_value *array) {
+  if (array->type != json_array) {
+    log_err("parse array failed");
+    exit(-1);
+  }
 
-//   return;
-// }
+  for (int i = 0; i < array->u.array.length; i++) {
+    process_pair(array->u.array.values[i]);
+  }
+}
 
-void mysendmsg(const char *str);
+void json_process(char *file_contents, int file_size) {
+  json_char *json;
+  json_value *value;
+  json = (json_char *)file_contents;
+  value = json_parse(json, file_size);
+
+  if (value == NULL) {
+    log_err("Unable to parse config_file!");
+    free(file_contents);
+    exit(1);
+  }
+
+  if (value->type != json_object) {
+    log_err("parse root failed");
+    exit(-1);
+  }
+
+  for (int i = 0; i < value->u.object.length; i++) {
+    // if (strstr(value->u.object.values[i].name,
+    // program_invocation_short_name)) {
+    process_array(value->u.object.values[i].value);
+    // }
+  }
+
+  return;
+}
 
 int main() {
   sock_fd = socket(PF_NETLINK, SOCK_RAW, NETLINK_USER);
@@ -144,21 +184,10 @@ int main() {
 
   char *file_contents = getfile_content();
 
-  // strcpy(NLMSG_DATA(nlh), file_contents);
-
-  // iov.iov_base = (void *)nlh;
-  // iov.iov_len = nlh->nlmsg_len;
-  // msg.msg_name = (void *)&dest_addr;
-  // msg.msg_namelen = sizeof(dest_addr);
-  // msg.msg_iov = &iov;
-  // msg.msg_iovlen = 1;
-
-  // printf("Sending message to kernel\n");
-  // sendmsg(sock_fd, &msg, 0);
-  mysendmsg("111");
-  mysendmsg("222");
-  mysendmsg("333");
-  mysendmsg("444");
+  sendstr("111");
+  sendstr("222");
+  sendstr("333");
+  sendstr("444");
 
   printf("Waiting for message from kernel\n");
 
@@ -168,8 +197,21 @@ int main() {
   close(sock_fd);
 }
 
-void mysendmsg(const char *str) {
+void sendstr(const char *str) {
   strcpy(NLMSG_DATA(nlh), str);
+  iov.iov_base = (void *)nlh;
+  iov.iov_len = nlh->nlmsg_len;
+  msg.msg_name = (void *)&dest_addr;
+  msg.msg_namelen = sizeof(dest_addr);
+  msg.msg_iov = &iov;
+  msg.msg_iovlen = 1;
+  printf("Sending message to kernel\n");
+  sendmsg(sock_fd, &msg, 0);
+}
+
+void sendstruct(struct user *u) {
+  memcpy(NLMSG_DATA(nlh), u, sizeof(u));
+  // strcpy(NLMSG_DATA(nlh), str);
   iov.iov_base = (void *)nlh;
   iov.iov_len = nlh->nlmsg_len;
   msg.msg_name = (void *)&dest_addr;

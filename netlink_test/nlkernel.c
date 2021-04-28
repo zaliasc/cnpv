@@ -4,6 +4,12 @@
 #include <net/sock.h>
 
 #define NETLINK_USER 31
+#define MAX_PATH 255
+
+struct user {
+  char pathname[MAX_PATH];
+  int permission;
+};
 
 struct sock *nl_sk = NULL;
 
@@ -21,8 +27,15 @@ static void hello_nl_recv_msg(struct sk_buff *skb) {
   msg_size = strlen(msg);
 
   nlh = (struct nlmsghdr *)skb->data;
-  printk(KERN_INFO "Netlink received msg payload:%s\n",
-         (char *)nlmsg_data(nlh));
+
+  struct user *u = (struct user *)nlmsg_data(nlh);
+
+  // printk(KERN_INFO "Netlink received msg payload:%s\n",
+  //        (char *)nlmsg_data(nlh));
+
+  printk(KERN_INFO "Netlink received msg payload:path: %s\n, permission: %d",
+         u->pathname, u->permission);
+
   pid = nlh->nlmsg_pid; /*pid of sending process */
 
   skb_out = nlmsg_new(msg_size, 0);
