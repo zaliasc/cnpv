@@ -60,9 +60,7 @@ char *getfile_content(int *file_size) {
   return file_contents;
 }
 
-void sendstruct(struct myuser *u);
-
-void sendcmd(struct myuser *u);
+void mysendmsg(struct myuser *u);
 
 void get_dir_content(char *path, int permission) {
   log_debug("process dir path");
@@ -78,7 +76,7 @@ void get_dir_content(char *path, int permission) {
       tmp.permission = permission;
       tmp.type = MYUSER;
       log_debug("%s%s\n", path, dir->d_name);
-      sendstruct(&tmp);
+      mysendmsg(&tmp);
     } else if (dir->d_type == DT_DIR && strcmp(dir->d_name, ".") != 0 &&
                strcmp(dir->d_name, "..") != 0) {
       // if it is a directory
@@ -125,7 +123,7 @@ static void process_pair(json_value *pair) {
   } else {
     printf("path: %s, permission : %d\n", user_t.pathname, user_t.permission);
     user_t.type = MYUSER;
-    sendstruct(&user_t);
+    mysendmsg(&user_t);
   }
 }
 
@@ -205,7 +203,7 @@ int main(int argc, char **argv) {
     case 'r': {
       tmp.type = CMD;
       strcpy(tmp.pathname, "clear");
-      sendstruct(&tmp);
+      mysendmsg(&tmp);
       close(sock_fd);
       return 0;
     }
@@ -220,7 +218,7 @@ int main(int argc, char **argv) {
       tmp.type = CMD;
       sprintf(target, "%s", optarg);
       sprintf(tmp.pathname, "tar-%s", optarg);
-      sendstruct(&tmp);
+      mysendmsg(&tmp);
       close(sock_fd);
       break;
     }
@@ -244,8 +242,7 @@ int main(int argc, char **argv) {
   // close(sock_fd);
 }
 
-void sendstruct(struct myuser *u) {
-  // u->type = MYUSER;
+void mysendmsg(struct myuser *u) {
   memcpy(NLMSG_DATA(nlh), (void *)u, sizeof(*u));
   iov.iov_base = (void *)nlh;
   iov.iov_len = nlh->nlmsg_len;
@@ -254,20 +251,6 @@ void sendstruct(struct myuser *u) {
   msg.msg_iov = &iov;
   msg.msg_iovlen = 1;
   printf("Sending struct to kernel: %s \n", u->pathname);
-  int ret = sendmsg(sock_fd, &msg, 0);
-  printf("%d \n", ret);
-}
-
-void sendcmd(struct myuser *u) {
-  u->type = CMD;
-  memcpy(NLMSG_DATA(nlh), (void *)u, sizeof(*u));
-  iov.iov_base = (void *)nlh;
-  iov.iov_len = nlh->nlmsg_len;
-  msg.msg_name = (void *)&dest_addr;
-  msg.msg_namelen = sizeof(dest_addr);
-  msg.msg_iov = &iov;
-  msg.msg_iovlen = 1;
-  printf("Sending message %s to kernel\n", u->pathname);
   int ret = sendmsg(sock_fd, &msg, 0);
   printf("%d \n", ret);
 }
