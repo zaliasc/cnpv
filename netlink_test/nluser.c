@@ -60,6 +60,8 @@ char *getfile_content(int *file_size) {
 
 void sendstruct(struct myuser *u);
 
+void sendcmd(struct myuser *u);
+
 void get_dir_content(char *path, int permission) {
   log_debug("process dir path");
   DIR *d = opendir(path);
