@@ -192,18 +192,11 @@ int netlink_init(void) {
 }
 
 int main(int argc, char **argv) {
-  if (argc == 1) {
-    return 0;
-  }
-
   if (netlink_init() == -1) {
     printf("netlink init failed\n");
     exit(-1);
   }
-
   int ch;
-  printf("\n\n");
-  printf("optind:%d，opterr：%d\n", optind, opterr);
   printf("--------------------------\n");
   while ((ch = getopt(argc, argv, "rht:c:")) != -1) {
     switch (ch) {
