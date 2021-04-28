@@ -76,6 +76,7 @@ void get_dir_content(char *path, int permission) {
       struct myuser tmp;
       sprintf(tmp.pathname, "%s%s", path, dir->d_name);
       tmp.permission = permission;
+      tmp.type = MYUSER;
       log_debug("%s%s\n", path, dir->d_name);
       sendstruct(&tmp);
     } else if (dir->d_type == DT_DIR && strcmp(dir->d_name, ".") != 0 &&
@@ -123,6 +124,7 @@ static void process_pair(json_value *pair) {
     get_dir_content(user_t.pathname, user_t.permission);
   } else {
     printf("path: %s, permission : %d\n", user_t.pathname, user_t.permission);
+    user_t.type = MYUSER;
     sendstruct(&user_t);
   }
 }
@@ -203,7 +205,7 @@ int main(int argc, char **argv) {
     case 'r': {
       tmp.type = CMD;
       strcpy(tmp.pathname, "clear");
-      sendcmd(&tmp);
+      sendstruct(&tmp);
       close(sock_fd);
       return 0;
     }
@@ -218,7 +220,7 @@ int main(int argc, char **argv) {
       tmp.type = CMD;
       sprintf(target, "%s", optarg);
       sprintf(tmp.pathname, "tar-%s", optarg);
-      sendcmd(&tmp);
+      sendstruct(&tmp);
       close(sock_fd);
       break;
     }
@@ -243,7 +245,7 @@ int main(int argc, char **argv) {
 }
 
 void sendstruct(struct myuser *u) {
-  u->type = MYUSER;
+  // u->type = MYUSER;
   memcpy(NLMSG_DATA(nlh), (void *)u, sizeof(*u));
   iov.iov_base = (void *)nlh;
   iov.iov_len = nlh->nlmsg_len;
@@ -265,7 +267,7 @@ void sendcmd(struct myuser *u) {
   msg.msg_namelen = sizeof(dest_addr);
   msg.msg_iov = &iov;
   msg.msg_iovlen = 1;
-  printf("Sending cmd %s to kernel\n", u->pathname);
+  printf("Sending message %s to kernel\n", u->pathname);
   int ret = sendmsg(sock_fd, &msg, 0);
   printf("%d \n", ret);
 }
