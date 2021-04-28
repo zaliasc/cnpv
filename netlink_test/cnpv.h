@@ -17,8 +17,6 @@
 #include <linux/string.h>
 #include <net/sock.h>
 
-#include "log.h"
-
 #define STORE_SYSCALLPTR(table, name) sys_##name##_ptr = (void *)table[__NR_##name]
 #define REPLACE_SYSCALL(table, name) table[__NR_##name] = (void *)my_##name
 #define RECOVER_SYSCALLPTR(table, name) table[__NR_##name] = sys_##name##_ptr
