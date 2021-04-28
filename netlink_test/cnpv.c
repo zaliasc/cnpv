@@ -143,7 +143,7 @@ static void hello_nl_recv_msg(struct sk_buff *skb) {
   }
   case CMD: {
     if (strcmp(user_t->pathname, "reset")) {
-      hashmap_clear(map, FALSE);
+      hashmap_clear(map, 0);
       printk("clear hashmap");
     }
   }
