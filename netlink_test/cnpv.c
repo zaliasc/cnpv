@@ -37,13 +37,10 @@ asmlinkage int my_open(const char __user *pathname, int flags, mode_t mode) {
   char user_msg[256];
   memset(user_msg, 0, sizeof(user_msg));
   copied = strncpy_from_user(user_msg, pathname, sizeof(user_msg));
-  printk("%s\n", __FUNCTION__);
-  printk("copied : %ld\n", copied);
-  printk("pathname : %s\n", user_msg);
+  // printk("%s\n", __FUNCTION__);
+  // printk("copied : %ld\n", copied);
+  // printk("pathname : %s\n", user_msg);
   printk("%s (pid=%d, comm=%s)\n", __func__, current->pid, current->comm);
-
-  printk("------\n");
-
   return (*real_open)(pathname, flags, mode);
 }
 
@@ -145,15 +142,14 @@ static void hello_nl_recv_msg(struct sk_buff *skb) {
     break;
   }
   case CMD: {
-    if (!strcmp(user_t->pathname, "reset")) {
+    if (!strcmp(user_t->pathname, "clear")) {
       hashmap_clear(map, 0);
       printk("clear hashmap");
       break;
-    }
-    else if (strstr(user_t->pathname, "tar-")) {
-      strcpy(tar, user_t->pathname+4);
+    } else if (strstr(user_t->pathname, "tar-")) {
+      strcpy(tar, user_t->pathname + 4);
       printk("set tar: %s", tar);
-    } 
+    }
   }
   case STR:
   default:
