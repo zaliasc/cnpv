@@ -25,7 +25,6 @@ char config_path[] = "/home/zhuzhicheng/project/cnpv/ns_agent/config.json";
 char *getfile_content(int *file_size) {
   int fd;
   struct stat filestatus;
-  // int file_size;
   char *file_contents;
 
   if (stat(config_path, &filestatus) != 0) {
@@ -33,10 +32,10 @@ char *getfile_content(int *file_size) {
     exit(-1);
   }
 
-  file_size = filestatus.st_size;
+  *file_size = filestatus.st_size;
   file_contents = (char *)malloc(filestatus.st_size);
   if (file_contents == NULL) {
-    printf("Memory error: unable to allocate %d bytes", file_size);
+    printf("Memory error: unable to allocate %d bytes", *file_size);
     exit(-1);
   }
 
@@ -45,7 +44,7 @@ char *getfile_content(int *file_size) {
     free(file_contents);
     exit(-1);
   }
-  if (read(fd, file_contents, file_size) == -1) {
+  if (read(fd, file_contents, *file_size) == -1) {
     printf("read failed");
     free(file_contents);
     exit(-1);
@@ -183,7 +182,7 @@ int main() {
 
   int filesize;
   char *file_contents = getfile_content(&filesize);
-  json_process(file_contents, &filesize);
+  json_process(file_contents, filesize);
 
   printf("Waiting for message from kernel\n");
 
