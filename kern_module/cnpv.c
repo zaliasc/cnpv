@@ -51,10 +51,10 @@ asmlinkage int my_open(const char __user *pathname, int flags, mode_t mode) {
 }
 
 static int __init open_hook_init(void) {
-  unsigned long **syscall_table = acquire_syscall_table();
+  // unsigned long **syscall_table = acquire_syscall_table();
 
   // disable_page_protection();
-  set_addr_rw((unsigned long)syscall_table);
+  // set_addr_rw((unsigned long)syscall_table);
 
   // now replace the syscal
   // STORE_SYSCALLPTR(syscall_table, open);
