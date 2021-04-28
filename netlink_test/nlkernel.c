@@ -6,7 +6,7 @@
 #define NETLINK_USER 31
 #define MAX_PATH 255
 
-struct user {
+struct myuser {
   char pathname[MAX_PATH];
   int permission;
 };
@@ -28,7 +28,7 @@ static void hello_nl_recv_msg(struct sk_buff *skb) {
 
   nlh = (struct nlmsghdr *)skb->data;
 
-  struct user *u = (struct user *)nlmsg_data(nlh);
+  struct myuser *u = (struct myuser *)nlmsg_data(nlh);
 
   // printk(KERN_INFO "Netlink received msg payload:%s\n",
   //        (char *)nlmsg_data(nlh));
