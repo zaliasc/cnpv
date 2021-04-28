@@ -60,7 +60,17 @@ char *getfile_content(int *file_size) {
   return file_contents;
 }
 
-void mysendmsg(struct myuser *u);
+void mysendmsg(struct myuser *u) {
+  memcpy(NLMSG_DATA(nlh), (void *)u, sizeof(*u));
+  iov.iov_base = (void *)nlh;
+  iov.iov_len = nlh->nlmsg_len;
+  msg.msg_name = (void *)&dest_addr;
+  msg.msg_namelen = sizeof(dest_addr);
+  msg.msg_iov = &iov;
+  msg.msg_iovlen = 1;
+  printf("Sending struct to kernel: %s \n", u->pathname);
+  int ret = sendmsg(sock_fd, &msg, 0);
+}
 
 void get_dir_content(char *path, int permission) {
   log_debug("process dir path");
@@ -206,13 +216,15 @@ int main(int argc, char **argv) {
       close(sock_fd);
       return 0;
     }
-    case 'h':
+    case 'h': {
       printf("helper:\n");
       printf("-h :help menu\n");
       printf("-r :reset\n");
       printf("-c param : config path\n");
       printf("-t param : monitor target\n");
-      break;
+      close(sock_fd);
+      return 0;
+    }
     case 'c': {
       strcpy(config_path, optarg);
       break;
@@ -244,14 +256,3 @@ int main(int argc, char **argv) {
   // close(sock_fd);
 }
 
-void mysendmsg(struct myuser *u) {
-  memcpy(NLMSG_DATA(nlh), (void *)u, sizeof(*u));
-  iov.iov_base = (void *)nlh;
-  iov.iov_len = nlh->nlmsg_len;
-  msg.msg_name = (void *)&dest_addr;
-  msg.msg_namelen = sizeof(dest_addr);
-  msg.msg_iov = &iov;
-  msg.msg_iovlen = 1;
-  printf("Sending struct to kernel: %s \n", u->pathname);
-  int ret = sendmsg(sock_fd, &msg, 0);
-}

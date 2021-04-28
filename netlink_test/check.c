@@ -6,7 +6,6 @@
 extern struct hashmap *map;
 
 int check_permission(const char *pathname, int oflag) {
-  bool ret = false;
   char buf[MAX_PATH];
   int permission = -1;
 
