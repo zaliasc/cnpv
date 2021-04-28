@@ -71,19 +71,21 @@ char *load_file(char *filename, int *filesize) {
   int size = *filesize;
   int record = 0;
   char *buf = kmalloc(size, GFP_KERNEL);
-  memset(buf, sizeof(buf), 0);
+  memset(buf, 0, size);
   struct file *f = file_open(filename, O_RDONLY, 0);
-  while (size > 0) {
-    if (size >= 512) {
-      file_read(f, record, buf + record, 512);
-      size -= 512;
-      record += 512;
-    } else {
-      file_read(f, record, buf + record, size);
-    }
-    printk("size: %d record: %d", size, record);
-    printk("buf : %s", buf);
-  }
+  file_read(f, 0, buf, size); 
+
+  // while (size > 0) {
+  //   if (size >= 512) {
+  //     file_read(f, record, buf + record, 512);
+  //     size -= 512;
+  //     record += 512;
+  //   } else {
+  //     file_read(f, record, buf + record, size);
+  //   }
+  //   printk("size: %d record: %d", size, record);
+  // }
+  printk("size : %d \nbuf : %s",size, buf);
   file_close(f);
   return buf;
 }
