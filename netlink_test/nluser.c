@@ -52,7 +52,7 @@ char *getfile_content(int *file_size) {
   }
   close(fd);
 
-  printf("file_size : %d file_content: %s",file_size, file_contents);
+  // printf("file_size : %d file_content: %s", *file_size, file_contents);
 }
 
 void sendstr(const char *str);
@@ -185,6 +185,9 @@ int main() {
 
   int filesize;
   char *file_contents = getfile_content(&filesize);
+
+  printf("file_size : %d file_content: %s", filesize, file_contents);
+
   json_process(file_contents, filesize);
 
   printf("Waiting for message from kernel\n");
