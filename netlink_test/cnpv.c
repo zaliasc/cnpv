@@ -50,13 +50,13 @@ asmlinkage int my_open(const char __user *pathname, int flags, mode_t mode) {
 static void open_hook(void) {
   unsigned long **syscall_table = acquire_syscall_table();
 
-  disable_page_protection();
+  // disable_page_protection;
   set_addr_rw((unsigned long)syscall_table);
 
-  now replace the syscal STORE_SYSCALLPTR(syscall_table, open);
+  // now replace the syscal STORE_SYSCALLPTR(syscall_table, open);
   REPLACE_SYSCALL(syscall_table, open);
 
-  enable_page_protection();
+  // enable_page_protection;
   set_addr_ro((unsigned long)syscall_table);
 
   printk(KERN_INFO "starting intercept\n");
@@ -67,13 +67,13 @@ static void open_hook(void) {
 static void open_reset(void) {
   void **syscall_table = (void **)acquire_syscall_table();
 
-  // disable_page_protection();
+  // disable_page_protection;
   set_addr_rw((unsigned long)syscall_table);
 
   // now recover the syscall
   RECOVER_SYSCALLPTR(syscall_table, open);
 
-  // enable_page_protection();
+  // enable_page_protection;
   set_addr_ro((unsigned long)syscall_table);
 
   printk(KERN_INFO "Bye bye open_hook\n");
