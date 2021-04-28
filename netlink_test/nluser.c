@@ -161,7 +161,7 @@ void json_process(char *file_contents, int file_size) {
   return;
 }
 
-void netlink_init(void) {
+int netlink_init(void) {
   sock_fd = socket(PF_NETLINK, SOCK_RAW, NETLINK_USER);
   if (sock_fd < 0)
     return -1;
@@ -183,6 +183,8 @@ void netlink_init(void) {
   nlh->nlmsg_len = NLMSG_SPACE(MAX_PAYLOAD);
   nlh->nlmsg_pid = getpid();
   nlh->nlmsg_flags = 0;
+
+  return 0;
 }
 
 int main(int argc, char **argv) {
@@ -191,7 +193,10 @@ int main(int argc, char **argv) {
     return 0;
   }
 
-  netlink_init();
+  if (netlink_init() == -1) {
+    printf("netlink init failed\n");
+    exit(-1);
+  }
 
   if (!strcmp(argv[1], "-r")) {
     user_t.type = CMD;
@@ -215,6 +220,12 @@ int main(int argc, char **argv) {
     int file_size;
     char *file_contents = getfile_content(&file_size);
     json_process(file_contents, file_size);
+    close(sock_fd);
+    return 0;
+  }
+
+  if (!strcmp(argv[1], "-h")) {
+    printf("---help--------\n");
     close(sock_fd);
     return 0;
   }
