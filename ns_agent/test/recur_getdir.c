@@ -24,10 +24,7 @@ void show_dir_content(char *path) {
 
 int main(int argc, char **argv) {
 
-  printf("%s\n", NORMAL_COLOR);
-
   show_dir_content(argv[1]);
 
-  printf("%s\n", NORMAL_COLOR);
   return (0);
 }
