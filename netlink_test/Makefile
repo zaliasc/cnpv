@@ -1,6 +1,8 @@
 KDIR := /lib/modules/$(shell uname -r)/build
 
-obj-m += nlkernel.o
+obj-m += cnpv_kern.o
+
+cnpv_kern-objs += nlkernel.o map.o
 
 all:
 	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules

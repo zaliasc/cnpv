@@ -24,4 +24,9 @@ struct myuser {
   int permission;
 };
 
+struct mapuser {
+  char pathname[MAX_PATH];
+  int permission;
+};
+
 #endif /* TYPES_H */

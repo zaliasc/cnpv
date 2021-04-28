@@ -2,15 +2,39 @@
 #include <linux/netlink.h>
 #include <linux/skbuff.h>
 #include <net/sock.h>
+#include <linux/string.h>
 
+#include "map.h"
 #include "types.h"
 
 #define NETLINK_USER 31
 
+struct hashmap *map = NULL;
+
+struct myuser * user_t ;
+
+struct mapuser mapuser_t;
+
+int user_compare(const void *a, const void *b, void *udata) {
+  const struct mapuser *ua = a;
+  const struct mapuser *ub = b;
+  return strcmp(ua->pathname, ub->pathname);
+}
+
+bool user_iter(const void *item, void *udata) {
+  const struct mapuser *user = item;
+  printf("%s (age=%d)\n", user->pathname, user->permission);
+  return true;
+}
+
+uint64_t user_hash(const void *item, uint64_t seed0, uint64_t seed1) {
+  const struct mapuser *user = item;
+  return hashmap_sip(user->pathname, strlen(user->pathname), seed0, seed1);
+}
+
 struct sock *nl_sk = NULL;
 
 static void hello_nl_recv_msg(struct sk_buff *skb) {
-
   struct nlmsghdr *nlh;
   int pid;
   struct sk_buff *skb_out;
@@ -24,12 +48,21 @@ static void hello_nl_recv_msg(struct sk_buff *skb) {
 
   nlh = (struct nlmsghdr *)skb->data;
 
-  struct myuser *u = (struct myuser *)nlmsg_data(nlh);
+  user_t = (struct myuser *)nlmsg_data(nlh);
+
+  if (map == NULL) {
+    map = hashmap_new(sizeof(struct mapuser), 0, 0, 0, user_hash, user_compare,
+                      NULL);
+  }
 
   switch (u->type) {
   case MYUSER:
     printk(KERN_INFO "Netlink received msg payload:path: %s\n, permission: %d",
-           u->pathname, u->permission);
+           user_t->pathname, user_t->permission);
+    strncpy(mapuser_t.pathname, user_t->pathname, MAX_PATH);
+    mapuser_t.permission = user_t->permission;
+    hashmap_set(map, &mapuser_t);
+    printk("hash map count : %d", (int)hashmap_count(map));
     break;
   case CMD:
   case STR:
