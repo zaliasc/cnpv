@@ -18,7 +18,7 @@ struct nlmsghdr *nlh = NULL;
 struct iovec iov;
 int sock_fd;
 struct msghdr msg;
-struct user user_t;
+struct myuser user_t;
 
 char config_path[] = "/home/zhuzhicheng/project/cnpv/ns_agent/config.json";
 
@@ -53,14 +53,12 @@ char *getfile_content(int *file_size) {
   }
   close(fd);
 
-  // printf("file_size : %d file_content: %s", *file_size, file_contents);
-
   return file_contents;
 }
 
-void sendstr(const char *str);
+// void sendstr(const char *str);
 
-void sendstruct(struct user *u);
+void sendstruct(struct myuser *u);
 
 void get_dir_content(char *path, int permission) {
   log_debug("process dir path");
@@ -73,9 +71,9 @@ void get_dir_content(char *path, int permission) {
     if (dir->d_type != DT_DIR) {
       sprintf(user_t.pathname, "%s%s", path, dir->d_name);
       user_t.permission = permission;
-      printf("path: %s, permission : %d\n", user_t.pathname, user_t.permission);
+      log_debug("path: %s, permission : %d\n", user_t.pathname, user_t.permission);
+      user_t.type = MYUSER;
       sendstruct(&user_t);
-      log_debug("%s%s\n", path, dir->d_name);
     } else if (dir->d_type == DT_DIR && strcmp(dir->d_name, ".") != 0 &&
                strcmp(dir->d_name, "..") != 0) {
       // if it is a directory
@@ -104,24 +102,24 @@ static void process_pair(json_value *pair) {
     exit(-1);
   }
 
-  struct user tmp = {.pathname = {0}};
+  memset(user_t.pathname, 0, sizeof(user_t.pathname));
 
   for (int i = 0; i < pair->u.array.length; i++) {
     if (!strcmp(pair->u.object.values[i].name, "PATH")) {
-      strncpy(tmp.pathname, pair->u.object.values[i].value->u.string.ptr,
+      strncpy(user_t.pathname, pair->u.object.values[i].value->u.string.ptr,
               MAX_PATH - 1);
     } else if (!strcmp(pair->u.object.values[i].name, "AUTHORITY")) {
-      tmp.permission =
+      user_t.permission =
           get_mode_value(pair->u.object.values[i].value->u.string.ptr);
     }
   }
 
-  if (tmp.pathname[strlen(tmp.pathname) - 1] == '/') {
+  if (user_t.pathname[strlen(user_t.pathname) - 1] == '/') {
     // dir
-    get_dir_content(tmp.pathname, tmp.permission);
+    get_dir_content(user_t.pathname, user_t.permission);
   } else {
-    printf("path: %s, permission : %d\n", tmp.pathname, tmp.permission);
-    sendstruct(&tmp);
+    printf("path: %s, permission : %d\n", user_t.pathname, user_t.permission);
+    sendstruct(&user_t);
   }
 }
 
@@ -187,9 +185,8 @@ int main() {
   nlh->nlmsg_flags = 0;
 
   int file_size;
+  
   char *file_contents = getfile_content(&file_size);
-
-  // printf("file_size : %d file_content: %s", file_size, file_contents);
 
   json_process(file_contents, file_size);
 
@@ -201,21 +198,22 @@ int main() {
   close(sock_fd);
 }
 
-void sendstr(const char *str) {
-  strcpy(NLMSG_DATA(nlh), str);
-  iov.iov_base = (void *)nlh;
-  iov.iov_len = nlh->nlmsg_len;
-  msg.msg_name = (void *)&dest_addr;
-  msg.msg_namelen = sizeof(dest_addr);
-  msg.msg_iov = &iov;
-  msg.msg_iovlen = 1;
-  printf("Sending message to kernel\n");
-  sendmsg(sock_fd, &msg, 0);
-}
+// void sendstr(struct myuser *u) {
+//   strcpy(NLMSG_DATA(nlh), str);
 
-void sendstruct(struct user *u) {
+//   iov.iov_base = (void *)nlh;
+//   iov.iov_len = nlh->nlmsg_len;
+//   msg.msg_name = (void *)&dest_addr;
+//   msg.msg_namelen = sizeof(dest_addr);
+//   msg.msg_iov = &iov;
+//   msg.msg_iovlen = 1;
+//   printf("Sending message to kernel\n");
+//   sendmsg(sock_fd, &msg, 0);
+// }
+
+void sendstruct(struct myuser *u) {
+  u->type = MYUSER;
   memcpy(NLMSG_DATA(nlh), (void *)u, sizeof(*u));
-  // strcpy(NLMSG_DATA(nlh), str);
   iov.iov_base = (void *)nlh;
   iov.iov_len = nlh->nlmsg_len;
   msg.msg_name = (void *)&dest_addr;

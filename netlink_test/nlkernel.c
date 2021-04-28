@@ -3,13 +3,9 @@
 #include <linux/skbuff.h>
 #include <net/sock.h>
 
-#define NETLINK_USER 31
-#define MAX_PATH 255
+#include "types.h"
 
-struct myuser {
-  char pathname[MAX_PATH];
-  int permission;
-};
+#define NETLINK_USER 31
 
 struct sock *nl_sk = NULL;
 
@@ -30,11 +26,19 @@ static void hello_nl_recv_msg(struct sk_buff *skb) {
 
   struct myuser *u = (struct myuser *)nlmsg_data(nlh);
 
+  switch (u->type) {
+  case MYUSER:
+    printk(KERN_INFO "Netlink received msg payload:path: %s\n, permission: %d",
+           u->pathname, u->permission);
+    break;
+  case CMD:
+  case STR:
+  default:
+    break;
+  }
+
   // printk(KERN_INFO "Netlink received msg payload:%s\n",
   //        (char *)nlmsg_data(nlh));
-
-  printk(KERN_INFO "Netlink received msg payload:path: %s\n, permission: %d",
-         u->pathname, u->permission);
 
   pid = nlh->nlmsg_pid; /*pid of sending process */
 
