@@ -27,7 +27,7 @@
 
 // #define O_EXEC 0001
 
-#define MAX_PATH 512
+#define MAX_PATH 255
 
 // typedef FILE *(*fopen_t)(const char *pathname, const char *mode);
 // typedef int (*open_t)(const char *pathname, int flags, ...);
