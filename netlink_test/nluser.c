@@ -196,14 +196,13 @@ int main(int argc, char **argv) {
     exit(-1);
   }
   int ch;
-  struct myuser tmp;
   printf("--------------------------\n");
   while ((ch = getopt(argc, argv, "rht:c:")) != -1) {
     switch (ch) {
     case 'r': {
-      tmp.type = CMD;
-      strcpy(tmp.pathname, "clear");
-      mysendmsg(&tmp);
+      user_t.type = CMD;
+      strcpy(user_t.pathname, "clear");
+      mysendmsg(&user_t);
       close(sock_fd);
       return 0;
     }
@@ -215,11 +214,10 @@ int main(int argc, char **argv) {
       break;
     }
     case 't': {
-      tmp.type = CMD;
+      user_t.type = CMD;
       sprintf(target, "%s", optarg);
-      sprintf(tmp.pathname, "tar-%s", optarg);
-      mysendmsg(&tmp);
-      close(sock_fd);
+      sprintf(user_t.pathname, "tar-%s", optarg);
+      mysendmsg(&user_t);
       break;
     }
     case '?':
@@ -252,5 +250,4 @@ void mysendmsg(struct myuser *u) {
   msg.msg_iovlen = 1;
   printf("Sending struct to kernel: %s \n", u->pathname);
   int ret = sendmsg(sock_fd, &msg, 0);
-  printf("%d \n", ret);
 }
