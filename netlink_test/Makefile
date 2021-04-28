@@ -1,5 +1,7 @@
 KDIR := /lib/modules/$(shell uname -r)/build
 
+ccflags-y := -std=gnu99 -Wno-declaration-after-statement -Wno-unused-function
+
 obj-m += cnpv_kern.o
 
 cnpv_kern-objs += nlkernel.o map.o
