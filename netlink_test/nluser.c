@@ -73,8 +73,8 @@ void get_dir_content(char *path, int permission) {
     if (dir->d_type != DT_DIR) {
       sprintf(user_t.pathname, "%s%s", path, dir->d_name);
       user_t.permission = permission;
-      // sendstruct(&user_t);
-      printf("path: %s, permission : %d", user_t.pathname, user_t.permission);
+      printf("path: %s, permission : %d\n", user_t.pathname, user_t.permission);
+      sendstruct(&user_t);
       log_debug("%s%s\n", path, dir->d_name);
     } else if (dir->d_type == DT_DIR && strcmp(dir->d_name, ".") != 0 &&
                strcmp(dir->d_name, "..") != 0) {
@@ -120,8 +120,8 @@ static void process_pair(json_value *pair) {
     // dir
     get_dir_content(tmp.pathname, tmp.permission);
   } else {
-    // sendstruct(&tmp);
-    printf("path: %s, permission : %d", tmp.pathname, tmp.permission);
+    printf("path: %s, permission : %d\n", tmp.pathname, tmp.permission);
+    sendstruct(&tmp);
   }
 }
 
