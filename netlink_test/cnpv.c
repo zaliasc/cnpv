@@ -5,6 +5,8 @@
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Hook sys_call_open by change sys_open entry");
 
+extern int check_permission(const char *pathname, int oflag);
+
 // hook releative
 void set_addr_rw(unsigned long addr) {
 
@@ -40,7 +42,15 @@ asmlinkage int my_open(const char __user *pathname, int flags, mode_t mode) {
   // printk("%s\n", __FUNCTION__);
   // printk("copied : %ld\n", copied);
   // printk("pathname : %s\n", user_msg);
+
   printk("%s (pid=%d, comm=%s)\n", __func__, current->pid, current->comm);
+
+  if (strstr(current->comm, target)) {
+    if (check_permission(user_msg, flags) == 1) {
+      printk("check path %s success", user_msg);
+    } else
+      printk("check path %s failed", user_msg);
+  }
   return (*real_open)(pathname, flags, mode);
 }
 
@@ -89,7 +99,7 @@ struct myuser *user_t;
 
 struct mapuser mapuser_t;
 
-char tar[MAX_PATH] = {0};
+char target[MAX_PATH] = {0};
 
 int user_compare(const void *a, const void *b, void *udata) {
   const struct mapuser *ua = a;
@@ -118,8 +128,6 @@ static void hello_nl_recv_msg(struct sk_buff *skb) {
   char *msg = "Hello from kernel";
   int res;
 
-  // printk(KERN_INFO "Entering: %s\n", __FUNCTION__);
-
   msg_size = strlen(msg);
 
   nlh = (struct nlmsghdr *)skb->data;
@@ -147,8 +155,8 @@ static void hello_nl_recv_msg(struct sk_buff *skb) {
       printk("clear hashmap");
       break;
     } else if (strstr(user_t->pathname, "tar-")) {
-      strcpy(tar, user_t->pathname + 4);
-      printk("set tar: %s", tar);
+      strcpy(target, user_t->pathname + 4);
+      printk("set tar: %s", target);
     }
   }
   case STR:
@@ -190,7 +198,7 @@ static int __init cnpv_init(void) {
     return -10;
   }
 
-  // open_hook();
+  open_hook();
 
   return 0;
 }
@@ -201,7 +209,7 @@ static void __exit cnpv_exit(void) {
 
   netlink_kernel_release(nl_sk);
 
-  // open_reset();
+  open_reset();
 }
 
 module_init(cnpv_init);

@@ -207,7 +207,11 @@ int main(int argc, char **argv) {
       return 0;
     }
     case 'h':
-      printf("HAVE option: -h\n");
+      printf("helper:\n");
+      printf("-h :help menu\n");
+      printf("-r :reset\n");
+      printf("-c param : config path\n");
+      printf("-t param : monitor target\n");
       break;
     case 'c': {
       strcpy(config_path, optarg);

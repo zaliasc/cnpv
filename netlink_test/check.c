@@ -5,7 +5,7 @@
 
 extern struct hashmap *map;
 
-bool check_permission(const char *pathname, int oflag) {
+int check_permission(const char *pathname, int oflag) {
   bool ret = false;
   char buf[MAX_PATH];
   int permission = -1;
@@ -19,14 +19,15 @@ bool check_permission(const char *pathname, int oflag) {
   user = hashmap_get(map, &tmp);
 
   if (!user) {
-    return true;
+    return 1;
   }
 
   permission = user->permission;
 
-  printk("pathname : %s , permission: %d  oflag: %d",pathname, permission, oflag);
+  printk("pathname : %s , permission: %d  oflag: %d", pathname, permission,
+         oflag);
 
-  return true;
+  return 1;
 
   // if (permission & O_FORBIDDEN)
   //   ret = false;
