@@ -10,4 +10,4 @@ clean:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
 
 user :
-	gcc nluser.c json.c -lm
+	gcc nluser.c json.c -lm -g

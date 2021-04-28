@@ -42,6 +42,7 @@ char *getfile_content(int *file_size) {
   fd = open(config_path, O_RDONLY);
   if (fd == 0) {
     free(file_contents);
+    printf("file %s open failed", config_path);
     exit(-1);
   }
   if (read(fd, file_contents, *file_size) == -1) {
@@ -51,7 +52,7 @@ char *getfile_content(int *file_size) {
   }
   close(fd);
 
-  // printf("file_content: %s", file_contents);
+  printf("file_size : %d file_content: %s",file_size, file_contents);
 }
 
 void sendstr(const char *str);
