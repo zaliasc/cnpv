@@ -1,7 +1,6 @@
 #include <linux/string.h>
 
 #include "hashmap.h"
-#include "log.h"
 #include "types.h"
 
 extern struct hashmap *map;
