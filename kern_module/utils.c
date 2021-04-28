@@ -73,8 +73,8 @@ char *load_file(char *filename, int *filesize) {
   char *buf = kmalloc(size, GFP_KERNEL);
   memset(buf, 0, size);
   struct file *f = file_open(filename, O_RDONLY, 0);
-  file_read(f, 0, buf, size); 
-  printk("read file size : %d", size;
+  file_read(f, 0, buf, size);
+  printk("read file size : %d", size);
   file_close(f);
   return buf;
 }
