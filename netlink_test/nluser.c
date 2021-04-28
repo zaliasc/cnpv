@@ -251,7 +251,8 @@ void sendstruct(struct myuser *u) {
   msg.msg_iov = &iov;
   msg.msg_iovlen = 1;
   printf("Sending struct to kernel: %s \n", u->pathname);
-  sendmsg(sock_fd, &msg, 0);
+  int ret = sendmsg(sock_fd, &msg, 0);
+  printf("%d \n", ret);
 }
 
 void sendcmd(struct myuser *u) {
@@ -264,5 +265,6 @@ void sendcmd(struct myuser *u) {
   msg.msg_iov = &iov;
   msg.msg_iovlen = 1;
   printf("Sending cmd %s to kernel\n", u->pathname);
-  sendmsg(sock_fd, &msg, 0);
+  int ret = sendmsg(sock_fd, &msg, 0);
+  printf("%d \n", ret);
 }
