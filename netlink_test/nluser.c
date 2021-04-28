@@ -4,12 +4,14 @@
 #include <dirent.h>
 #include <fcntl.h>
 #include <linux/netlink.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
 #define NETLINK_USER 31
 
 #define MAX_PAYLOAD 1024 /* maximum payload size*/
@@ -20,9 +22,9 @@ int sock_fd;
 struct msghdr msg;
 struct myuser user_t;
 
-char config_path[] = "/home/zhuzhicheng/project/cnpv/netlink_test/config.json";
+char config_path[255] = "config.json";
 
-char target[] = "a.out";
+char target[255] = "a.out";
 
 char *getfile_content(int *file_size) {
   int fd;
@@ -190,7 +192,6 @@ int netlink_init(void) {
 }
 
 int main(int argc, char **argv) {
-
   if (argc == 1) {
     return 0;
   }
@@ -200,39 +201,69 @@ int main(int argc, char **argv) {
     exit(-1);
   }
 
-  if (!strcmp(argv[1], "-r")) {
-    user_t.type = CMD;
-    strcpy(user_t.pathname, "clear");
-    printf("send cmd %s", user_t.pathname);
-    sendcmd(&user_t);
-    close(sock_fd);
-    return 0;
+  int ch;
+  printf("\n\n");
+  printf("optind:%d，opterr：%d\n", optind, opterr);
+  printf("--------------------------\n");
+  while ((ch = getopt(argc, argv, "rht:c:")) != -1) {
+    switch (ch) {
+    case 'r': {
+      user_t.type = CMD;
+      strcpy(user_t.pathname, "clear");
+      printf("send cmd %s", user_t.pathname);
+      sendcmd(&user_t);
+      close(sock_fd);
+      return 0;
+    }
+    case 'h':
+      printf("HAVE option: -h\n");
+      break;
+    case 'c': {
+      strcpy(config_path, optarg);
+      break;
+    }
+    case 't': {
+      user_t.type = CMD;
+      sprintf(target, "%s", optarg);
+      sprintf(user_t.pathname, "tar-%s", optarg);
+      printf("send cmd %s", user_t.pathname);
+      sendcmd(&user_t);
+      close(sock_fd);
+      break;
+    }
+    case '?':
+      printf("Unknown option: %c\n", (char)optopt);
+      break;
+    }
   }
 
-  if (!strcmp(argv[1], "-t")) {
-    user_t.type = CMD;
-    sprintf(user_t.pathname, "tar-%s", argv[2]);
-    printf("send cmd %s", user_t.pathname);
-    sendcmd(&user_t);
-    close(sock_fd);
-    return 0;
-  }
+  // if (!strcmp(argv[1], "-r")) {
+  //   user_t.type = CMD;
+  //   strcpy(user_t.pathname, "clear");
+  //   printf("send cmd %s", user_t.pathname);
+  //   sendcmd(&user_t);
+  //   close(sock_fd);
+  //   return 0;
+  // }
 
-  if (!strcmp(argv[1], "-c")) {
-    int file_size;
-    char *file_contents = getfile_content(&file_size);
-    json_process(file_contents, file_size);
-    close(sock_fd);
-    return 0;
-  }
+  // if (!strcmp(argv[1], "-t")) {
+  //   user_t.type = CMD;
+  //   sprintf(target, "%s", argv[2]);
+  //   sprintf(user_t.pathname, "tar-%s", argv[2]);
+  //   printf("send cmd %s", user_t.pathname);
+  //   sendcmd(&user_t);
+  //   close(sock_fd);
+  //   return 0;
+  // }
 
-  if (!strcmp(argv[1], "-h")) {
-    printf("---help--------\n");
-    close(sock_fd);
-    return 0;
-  }
-
+  // if (!strcmp(argv[1], "-c")) {
+  int file_size;
+  char *file_contents = getfile_content(&file_size);
+  json_process(file_contents, file_size);
+  close(sock_fd);
   return 0;
+  // }
+
   // printf("Waiting for message from kernel\n");
 
   // /* Read message from kernel */
