@@ -45,6 +45,7 @@ char *getfile_content(int *file_size) {
     printf("file %s open failed", config_path);
     exit(-1);
   }
+
   if (read(fd, file_contents, *file_size) == -1) {
     printf("read failed");
     free(file_contents);
@@ -53,6 +54,8 @@ char *getfile_content(int *file_size) {
   close(fd);
 
   // printf("file_size : %d file_content: %s", *file_size, file_contents);
+
+  return file_contents;
 }
 
 void sendstr(const char *str);
@@ -183,12 +186,12 @@ int main() {
   nlh->nlmsg_pid = getpid();
   nlh->nlmsg_flags = 0;
 
-  int filesize;
-  char *file_contents = getfile_content(&filesize);
+  int file_size;
+  char *file_contents = getfile_content(&file_size);
 
-  printf("file_size : %d file_content: %s", filesize, file_contents);
+  // printf("file_size : %d file_content: %s", file_size, file_contents);
 
-  json_process(file_contents, filesize);
+  json_process(file_contents, file_size);
 
   printf("Waiting for message from kernel\n");
 
