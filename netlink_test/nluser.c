@@ -196,13 +196,14 @@ int main(int argc, char **argv) {
     exit(-1);
   }
   int ch;
+  struct myuser tmp;
   printf("--------------------------\n");
   while ((ch = getopt(argc, argv, "rht:c:")) != -1) {
     switch (ch) {
     case 'r': {
-      user_t.type = CMD;
-      strcpy(user_t.pathname, "clear");
-      sendcmd(&user_t);
+      tmp.type = CMD;
+      strcpy(tmp.pathname, "clear");
+      sendcmd(&tmp);
       close(sock_fd);
       return 0;
     }
@@ -214,10 +215,10 @@ int main(int argc, char **argv) {
       break;
     }
     case 't': {
-      user_t.type = CMD;
+      tmp.type = CMD;
       sprintf(target, "%s", optarg);
-      sprintf(user_t.pathname, "tar-%s", optarg);
-      sendcmd(&user_t);
+      sprintf(tmp.pathname, "tar-%s", optarg);
+      sendcmd(&tmp);
       close(sock_fd);
       break;
     }
