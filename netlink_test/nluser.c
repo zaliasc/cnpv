@@ -210,7 +210,6 @@ int main(int argc, char **argv) {
     case 'r': {
       user_t.type = CMD;
       strcpy(user_t.pathname, "clear");
-      printf("send cmd %s", user_t.pathname);
       sendcmd(&user_t);
       close(sock_fd);
       return 0;
@@ -226,7 +225,6 @@ int main(int argc, char **argv) {
       user_t.type = CMD;
       sprintf(target, "%s", optarg);
       sprintf(user_t.pathname, "tar-%s", optarg);
-      printf("send cmd %s", user_t.pathname);
       sendcmd(&user_t);
       close(sock_fd);
       break;
@@ -237,32 +235,11 @@ int main(int argc, char **argv) {
     }
   }
 
-  // if (!strcmp(argv[1], "-r")) {
-  //   user_t.type = CMD;
-  //   strcpy(user_t.pathname, "clear");
-  //   printf("send cmd %s", user_t.pathname);
-  //   sendcmd(&user_t);
-  //   close(sock_fd);
-  //   return 0;
-  // }
-
-  // if (!strcmp(argv[1], "-t")) {
-  //   user_t.type = CMD;
-  //   sprintf(target, "%s", argv[2]);
-  //   sprintf(user_t.pathname, "tar-%s", argv[2]);
-  //   printf("send cmd %s", user_t.pathname);
-  //   sendcmd(&user_t);
-  //   close(sock_fd);
-  //   return 0;
-  // }
-
-  // if (!strcmp(argv[1], "-c")) {
   int file_size;
   char *file_contents = getfile_content(&file_size);
   json_process(file_contents, file_size);
   close(sock_fd);
   return 0;
-  // }
 
   // printf("Waiting for message from kernel\n");
 
@@ -281,7 +258,7 @@ void sendstruct(struct myuser *u) {
   msg.msg_namelen = sizeof(dest_addr);
   msg.msg_iov = &iov;
   msg.msg_iovlen = 1;
-  printf("Sending message to kernel\n");
+  printf("Sending struct to kernel: %s \n", u->pathname);
   sendmsg(sock_fd, &msg, 0);
 }
 
