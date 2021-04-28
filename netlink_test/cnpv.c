@@ -7,6 +7,8 @@ MODULE_DESCRIPTION("Hook sys_call_open by change sys_open entry");
 
 extern int check_permission(const char *pathname, int oflag);
 
+char target[MAX_PATH] = "mytest";
+
 // hook releative
 void set_addr_rw(unsigned long addr) {
 
@@ -98,8 +100,6 @@ struct hashmap *map = NULL;
 struct myuser *user_t;
 
 struct mapuser mapuser_t;
-
-char target[MAX_PATH] = {0};
 
 int user_compare(const void *a, const void *b, void *udata) {
   const struct mapuser *ua = a;

@@ -218,8 +218,8 @@ int main(int argc, char **argv) {
       break;
     }
     case 't': {
-      user_t.type = CMD;
       sprintf(target, "%s", optarg);
+      user_t.type = CMD;
       sprintf(user_t.pathname, "tar-%s", optarg);
       mysendmsg(&user_t);
       break;
