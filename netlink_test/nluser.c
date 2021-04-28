@@ -70,6 +70,8 @@ int main() {
   }
   close(fd);
 
+  printf("file_content: %s", file_contents);
+
   strcpy(NLMSG_DATA(nlh), file_contents);
 
   iov.iov_base = (void *)nlh;
