@@ -7,8 +7,6 @@ MODULE_DESCRIPTION("Hook sys_call_open by change sys_open entry");
 /* The sys_call_table is read-only => must make it RW before replacing a syscall
  */
 
-extern void config_init(void);
-
 void set_addr_rw(unsigned long addr) {
 
   unsigned int level;
@@ -53,19 +51,18 @@ asmlinkage int my_open(const char __user *pathname, int flags, mode_t mode) {
 static int __init open_hook_init(void) {
   unsigned long **syscall_table = acquire_syscall_table();
 
-  disable_page_protection();
+  // disable_page_protection();
   set_addr_rw((unsigned long)syscall_table);
 
-  now replace the syscal
+  // now replace the syscal
   STORE_SYSCALLPTR(syscall_table, open);
   REPLACE_SYSCALL(syscall_table, open);
 
-  enable_page_protection();
+  // enable_page_protection();
   set_addr_ro((unsigned long)syscall_table);
 
   printk(KERN_INFO "starting intercept\n");
 
-  // config_init();
 
   return 0;
 }
