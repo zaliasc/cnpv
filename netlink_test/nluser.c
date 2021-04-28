@@ -70,7 +70,7 @@ void get_dir_content(char *path, int permission) {
       sprintf(user_t.pathname, "%s%s", path, dir->d_name);
       user_t.permission = permission;
       // sendstruct(&user_t);
-      printf("path: %s, permission : %d", tmp.pathname, tmp.permission);
+      printf("path: %s, permission : %d", user_t.pathname, user_t.permission);
       log_debug("%s%s\n", path, dir->d_name);
     } else if (dir->d_type == DT_DIR && strcmp(dir->d_name, ".") != 0 &&
                strcmp(dir->d_name, "..") != 0) {
