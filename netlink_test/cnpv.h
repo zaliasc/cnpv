@@ -17,7 +17,6 @@
 #include <linux/string.h>
 #include <net/sock.h>
 
-#include "json.h"
 #include "log.h"
 
 #define STORE_SYSCALLPTR(table, name) sys_##name##_ptr = (void *)table[__NR_##name]
