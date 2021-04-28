@@ -4,7 +4,7 @@ ccflags-y := -std=gnu99 -Wno-declaration-after-statement -Wno-unused-function
 
 obj-m += cnpv_kern.o
 
-cnpv_kern-objs += nlkernel.o map.o
+cnpv_kern-objs += cnpv.o map.o check.o 
 
 all:
 	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
