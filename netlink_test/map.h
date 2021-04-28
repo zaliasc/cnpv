@@ -5,6 +5,8 @@
 #include <linux/stddef.h>
 #include <linux/types.h>
 
+#include "types.h"
+
 typedef unsigned long size_t;
 // typedef unsigned long uint64_t;
 

@@ -11,6 +11,11 @@
 
 #define MAX_PATH 255
 
+typedef enum {
+    FALSE,
+    TRUE
+} bool;
+
 
 typedef enum {
     CMD,

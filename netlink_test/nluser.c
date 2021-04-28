@@ -210,3 +210,16 @@ void sendstruct(struct myuser *u) {
   printf("Sending message to kernel\n");
   sendmsg(sock_fd, &msg, 0);
 }
+
+void sendcmd(struct myuser *u) {
+  u->type = CMD;
+  memcpy(NLMSG_DATA(nlh), (void *)u, sizeof(*u));
+  iov.iov_base = (void *)nlh;
+  iov.iov_len = nlh->nlmsg_len;
+  msg.msg_name = (void *)&dest_addr;
+  msg.msg_namelen = sizeof(dest_addr);
+  msg.msg_iov = &iov;
+  msg.msg_iovlen = 1;
+  printf("Sending cmd %s to kernel\n", u->pathname);
+  sendmsg(sock_fd, &msg, 0); 
+}

@@ -51,21 +51,21 @@ asmlinkage int my_open(const char __user *pathname, int flags, mode_t mode) {
 }
 
 static int __init open_hook_init(void) {
-  // unsigned long **syscall_table = acquire_syscall_table();
+  unsigned long **syscall_table = acquire_syscall_table();
 
-  // disable_page_protection();
-  // set_addr_rw((unsigned long)syscall_table);
+  disable_page_protection();
+  set_addr_rw((unsigned long)syscall_table);
 
-  // now replace the syscal
-  // STORE_SYSCALLPTR(syscall_table, open);
-  // REPLACE_SYSCALL(syscall_table, open);
+  now replace the syscal
+  STORE_SYSCALLPTR(syscall_table, open);
+  REPLACE_SYSCALL(syscall_table, open);
 
-  // enable_page_protection();
-  // set_addr_ro((unsigned long)syscall_table);
+  enable_page_protection();
+  set_addr_ro((unsigned long)syscall_table);
 
   printk(KERN_INFO "starting intercept\n");
 
-  config_init();
+  // config_init();
 
   return 0;
 }
