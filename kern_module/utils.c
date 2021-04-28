@@ -26,7 +26,7 @@ int file_read(struct file *file, unsigned long long offset, unsigned char *data,
   oldfs = get_fs();
   set_fs(get_ds());
 
-  ret = vfs_read(file, data, size, &offset);
+  ret = kernel_read(file, data, size, &offset);
 
   set_fs(oldfs);
   return ret;
@@ -40,7 +40,7 @@ int file_write(struct file *file, unsigned long long offset,
   oldfs = get_fs();
   set_fs(get_ds());
 
-  ret = vfs_write(file, data, size, &offset);
+  ret = kernel_write(file, data, size, &offset);
 
   set_fs(oldfs);
   return ret;
@@ -68,8 +68,48 @@ int file_size(const char *filename) {
 
 char *load_file(char *filename, int *filesize) {
   *filesize = file_size(filename);
-  char *buf = kmalloc(* filesize, GFP_KERNEL);
+  int size = *filesize;
+  int record = 0;
+  char *buf = kmalloc(size, GFP_KERNEL);
+  memset(buf, sizeof(buf), 0);
   struct file *f = file_open(filename, O_RDONLY, 0);
-  file_read(f, 0, buf, filesize);
+  while (size > 0) {
+    if (size >= 512) {
+      file_read(f, record, buf + record, 512);
+      size -= 512;
+      record += 512;
+    } else {
+      file_read(f, record, buf + record, size);
+    }
+    printk("size: %d record: %d", size, record);
+    printk("buf : %s", buf);
+  }
+  file_close(f);
   return buf;
 }
+
+// static void read_file(char *filename) {
+//   struct file *f = NULL;
+//   int fd;
+//   char buf[1];
+//   loff_t f_pos = 0;
+//   mm_segment_t old_fs = get_fs();
+//   tab = kmalloc(15, GFP_KERNEL);
+//   set_fs(KERNEL_DS);
+
+//   f = filp_open(filename, O_RDONLY, 0);
+//   if (!IS_ERR(f)) {
+//     printk(KERN_DEBUG);
+//     while (kernel_read(f, buf, 1, &f_pos) == 1) {
+//       printk("%c", buf[0]);
+//       if (buf[0] != '\n') {
+//         tab[i] = buf[0];
+//         printk("tab[%d] = %c", i, tab[i]);
+//         i++;
+//       }
+//     }
+//     printk("\n");
+//     filp_close(f, NULL);
+//   }
+//   set_fs(old_fs);
+// }

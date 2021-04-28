@@ -7,6 +7,7 @@
 #include <linux/slab.h>
 #include <linux/stat.h>
 #include <linux/uaccess.h>
+#include <linux/string.h>
 
 struct file *file_open(const char *path, int flags, int rights);
 void file_close(struct file *file);

@@ -60,8 +60,8 @@ void config_init(void) {
 
   file_contents = load_file(config_path, &file_size);
 
-  printk(" file: %s\n file_size: %d\n file contents: %s", config_path,
-         file_size, file_contents);
+  // printk(" file: %s\n file_size: %d\n file contents: %s\n", config_path,
+  //        file_size, file_contents);
 
   // json_char *json;
 
