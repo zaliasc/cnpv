@@ -23,7 +23,7 @@ int user_compare(const void *a, const void *b, void *udata) {
 
 bool user_iter(const void *item, void *udata) {
   const struct mapuser *user = item;
-  printf("%s (age=%d)\n", user->pathname, user->permission);
+  printk("%s (age=%d)\n", user->pathname, user->permission);
   return true;
 }
 
@@ -55,7 +55,7 @@ static void hello_nl_recv_msg(struct sk_buff *skb) {
                       NULL);
   }
 
-  switch (u->type) {
+  switch (user_t->type) {
   case MYUSER:
     printk(KERN_INFO "Netlink received msg payload:path: %s\n, permission: %d",
            user_t->pathname, user_t->permission);
