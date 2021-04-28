@@ -73,12 +73,11 @@ void get_dir_content(char *path, int permission) {
   while ((dir = readdir(d)) != NULL) {
     // if the type is not directory just print
     if (dir->d_type != DT_DIR) {
-      sprintf(user_t.pathname, "%s %s", path, dir->d_name);
+      sprintf(user_t.pathname, "%s%s", path, dir->d_name);
       user_t.permission = permission;
-      log_debug("path: %s, permission : %d\n", user_t.pathname,
-                user_t.permission);
-      user_t.type = MYUSER;
-      sendstruct(&user_t);
+      log_debug("%s%s\n", path, dir->d_name);
+      // user_t.type = MYUSER;
+      // sendstruct(&user_t);
     } else if (dir->d_type == DT_DIR && strcmp(dir->d_name, ".") != 0 &&
                strcmp(dir->d_name, "..") != 0) {
       // if it is a directory
