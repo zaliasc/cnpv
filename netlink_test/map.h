@@ -1,5 +1,5 @@
-#ifndef HASHMAP_H
-#define HASHMAP_H
+#ifndef MAP_H
+#define MAP_H
 
 #include <linux/printk.h>
 #include <linux/stddef.h>

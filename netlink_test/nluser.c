@@ -20,7 +20,9 @@ int sock_fd;
 struct msghdr msg;
 struct myuser user_t;
 
-char config_path[] = "/home/zhuzhicheng/project/cnpv/ns_agent/config.json";
+char config_path[] = "/home/zhuzhicheng/project/cnpv/netlink_test/config.json";
+
+char target[] = "a.out";
 
 char *getfile_content(int *file_size) {
   int fd;
@@ -56,8 +58,6 @@ char *getfile_content(int *file_size) {
   return file_contents;
 }
 
-// void sendstr(const char *str);
-
 void sendstruct(struct myuser *u);
 
 void get_dir_content(char *path, int permission) {
@@ -71,7 +71,8 @@ void get_dir_content(char *path, int permission) {
     if (dir->d_type != DT_DIR) {
       sprintf(user_t.pathname, "%s%s", path, dir->d_name);
       user_t.permission = permission;
-      log_debug("path: %s, permission : %d\n", user_t.pathname, user_t.permission);
+      log_debug("path: %s, permission : %d\n", user_t.pathname,
+                user_t.permission);
       user_t.type = MYUSER;
       sendstruct(&user_t);
     } else if (dir->d_type == DT_DIR && strcmp(dir->d_name, ".") != 0 &&
@@ -152,10 +153,9 @@ void json_process(char *file_contents, int file_size) {
   }
 
   for (int i = 0; i < value->u.object.length; i++) {
-    // if (strstr(value->u.object.values[i].name,
-    // program_invocation_short_name)) {
-    process_array(value->u.object.values[i].value);
-    // }
+    if (strstr(value->u.object.values[i].name, target)) {
+      process_array(value->u.object.values[i].value);
+    }
   }
 
   return;
@@ -185,7 +185,7 @@ int main() {
   nlh->nlmsg_flags = 0;
 
   int file_size;
-  
+
   char *file_contents = getfile_content(&file_size);
 
   json_process(file_contents, file_size);
@@ -197,19 +197,6 @@ int main() {
   printf("Received message payload: %s\n", (char *)NLMSG_DATA(nlh));
   close(sock_fd);
 }
-
-// void sendstr(struct myuser *u) {
-//   strcpy(NLMSG_DATA(nlh), str);
-
-//   iov.iov_base = (void *)nlh;
-//   iov.iov_len = nlh->nlmsg_len;
-//   msg.msg_name = (void *)&dest_addr;
-//   msg.msg_namelen = sizeof(dest_addr);
-//   msg.msg_iov = &iov;
-//   msg.msg_iovlen = 1;
-//   printf("Sending message to kernel\n");
-//   sendmsg(sock_fd, &msg, 0);
-// }
 
 void sendstruct(struct myuser *u) {
   u->type = MYUSER;

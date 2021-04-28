@@ -1,8 +1,8 @@
 #include <linux/module.h>
 #include <linux/netlink.h>
 #include <linux/skbuff.h>
-#include <net/sock.h>
 #include <linux/string.h>
+#include <net/sock.h>
 
 #include "map.h"
 #include "types.h"
@@ -11,7 +11,7 @@
 
 struct hashmap *map = NULL;
 
-struct myuser * user_t ;
+struct myuser *user_t;
 
 struct mapuser mapuser_t;
 
@@ -56,7 +56,7 @@ static void hello_nl_recv_msg(struct sk_buff *skb) {
   }
 
   switch (user_t->type) {
-  case MYUSER:
+  case MYUSER: {
     printk(KERN_INFO "Netlink received msg payload:path: %s\n, permission: %d",
            user_t->pathname, user_t->permission);
     strncpy(mapuser_t.pathname, user_t->pathname, MAX_PATH);
@@ -64,21 +64,18 @@ static void hello_nl_recv_msg(struct sk_buff *skb) {
     hashmap_set(map, &mapuser_t);
     printk("hash map count : %d", (int)hashmap_count(map));
     break;
+  }
   case CMD:
   case STR:
   default:
     break;
   }
 
-  // printk(KERN_INFO "Netlink received msg payload:%s\n",
-  //        (char *)nlmsg_data(nlh));
-
   pid = nlh->nlmsg_pid; /*pid of sending process */
 
   skb_out = nlmsg_new(msg_size, 0);
 
   if (!skb_out) {
-
     printk(KERN_ERR "Failed to allocate new skb\n");
     return;
   }
