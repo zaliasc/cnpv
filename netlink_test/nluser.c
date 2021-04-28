@@ -214,7 +214,7 @@ void sendstr(const char *str) {
 }
 
 void sendstruct(struct user *u) {
-  memcpy(NLMSG_DATA(nlh), u, sizeof(u));
+  memcpy(NLMSG_DATA(nlh), (void *)u, sizeof(*u));
   // strcpy(NLMSG_DATA(nlh), str);
   iov.iov_base = (void *)nlh;
   iov.iov_len = nlh->nlmsg_len;
