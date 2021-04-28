@@ -11,11 +11,7 @@
 
 #define MAX_PATH 255
 
-typedef enum {
-    CMD,
-    STR,
-    MYUSER
-} netlink_type;
+typedef enum { CMD, STR, MYUSER } netlink_type;
 
 struct myuser {
   netlink_type type;

@@ -221,5 +221,5 @@ void sendcmd(struct myuser *u) {
   msg.msg_iov = &iov;
   msg.msg_iovlen = 1;
   printf("Sending cmd %s to kernel\n", u->pathname);
-  sendmsg(sock_fd, &msg, 0); 
+  sendmsg(sock_fd, &msg, 0);
 }

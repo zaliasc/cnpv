@@ -3,18 +3,18 @@
 
 #include <linux/fs.h>
 #include <linux/init.h>
-#include <linux/module.h>
 #include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/netlink.h>
 #include <linux/printk.h>
 #include <linux/sched.h>
+#include <linux/skbuff.h>
+#include <linux/slab.h>
+#include <linux/stat.h>
+#include <linux/string.h>
 #include <linux/syscalls.h>
 #include <linux/uaccess.h>
 #include <linux/unistd.h>
-#include <linux/stat.h>
-#include <linux/slab.h>
-#include <linux/netlink.h>
-#include <linux/skbuff.h>
-#include <linux/string.h>
 #include <net/sock.h>
 
 #define STORE_SYSCALLPTR(table, name) sys_##name##_ptr = (void *)table[__NR_##name]
@@ -40,7 +40,7 @@
 
 void *sys_open_ptr;
 void *sys_openat_ptr;
-asmlinkage int 
+asmlinkage int
 my_open(const char __user *pathname, int flags, mode_t mode);
 
 unsigned long **

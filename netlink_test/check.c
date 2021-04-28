@@ -1,7 +1,7 @@
-#include <linux/string.h>
-
 #include "map.h"
 #include "types.h"
+#include <linux/printk.h>
+#include <linux/string.h>
 
 extern struct hashmap *map;
 
@@ -24,7 +24,7 @@ bool check_permission(const char *pathname, int oflag) {
 
   permission = user->permission;
 
-  log_debug("pathname : %s , permission: %d  oflag: %d", permission, oflag);
+  printfk("pathname : %s , permission: %d  oflag: %d", permission, oflag);
 
   return true;
 
