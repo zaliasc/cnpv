@@ -1,6 +1,7 @@
 #include "json.h"
 #include "log.h"
 #include "types.h"
+#include <dirent.h>
 #include <fcntl.h>
 #include <linux/netlink.h>
 #include <stdio.h>
@@ -9,7 +10,6 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <dirent.h>
 #define NETLINK_USER 31
 
 #define MAX_PAYLOAD 1024 /* maximum payload size*/
@@ -22,10 +22,10 @@ struct user user_t;
 
 char config_path[] = "/home/zhuzhicheng/project/cnpv/ns_agent/config.json";
 
-char *getfile_content() {
+char *getfile_content(int *file_size) {
   int fd;
   struct stat filestatus;
-  int file_size;
+  // int file_size;
   char *file_contents;
 
   if (stat(config_path, &filestatus) != 0) {
@@ -58,7 +58,6 @@ char *getfile_content() {
 void sendstr(const char *str);
 
 void sendstruct(struct user *u);
-
 
 void get_dir_content(char *path, int permission) {
   log_debug("process dir path");
@@ -182,12 +181,9 @@ int main() {
   nlh->nlmsg_pid = getpid();
   nlh->nlmsg_flags = 0;
 
-  char *file_contents = getfile_content();
-
-  sendstr("111");
-  sendstr("222");
-  sendstr("333");
-  sendstr("444");
+  int filesize;
+  char *file_contents = getfile_content(&filesize);
+  json_process(file_contents, &filesize);
 
   printf("Waiting for message from kernel\n");
 
