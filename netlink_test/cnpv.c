@@ -92,6 +92,8 @@ struct myuser *user_t;
 
 struct mapuser mapuser_t;
 
+char tar[MAX_PATH] = {0};
+
 int user_compare(const void *a, const void *b, void *udata) {
   const struct mapuser *ua = a;
   const struct mapuser *ub = b;
@@ -143,10 +145,15 @@ static void hello_nl_recv_msg(struct sk_buff *skb) {
     break;
   }
   case CMD: {
-    if (strcmp(user_t->pathname, "reset")) {
+    if (!strcmp(user_t->pathname, "reset")) {
       hashmap_clear(map, 0);
       printk("clear hashmap");
+      break;
     }
+    else if (strstr(user_t->pathname, "tar-")) {
+      strcpy(tar, user_t->pathname+4);
+      printk("set tar: %s", tar);
+    } 
   }
   case STR:
   default:
@@ -187,7 +194,7 @@ static int __init cnpv_init(void) {
     return -10;
   }
 
-  open_hook();
+  // open_hook();
 
   return 0;
 }
@@ -198,7 +205,7 @@ static void __exit cnpv_exit(void) {
 
   netlink_kernel_release(nl_sk);
 
-  open_reset();
+  // open_reset();
 }
 
 module_init(cnpv_init);

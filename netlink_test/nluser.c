@@ -161,7 +161,7 @@ void json_process(char *file_contents, int file_size) {
   return;
 }
 
-int main() {
+void netlink_init(void) {
   sock_fd = socket(PF_NETLINK, SOCK_RAW, NETLINK_USER);
   if (sock_fd < 0)
     return -1;
@@ -183,19 +183,49 @@ int main() {
   nlh->nlmsg_len = NLMSG_SPACE(MAX_PAYLOAD);
   nlh->nlmsg_pid = getpid();
   nlh->nlmsg_flags = 0;
+}
 
-  int file_size;
+int main(int argc, char **argv) {
 
-  char *file_contents = getfile_content(&file_size);
+  if (argc == 1) {
+    return 0;
+  }
 
-  json_process(file_contents, file_size);
+  netlink_init();
 
-  printf("Waiting for message from kernel\n");
+  if (!strcmp(argv[1], "-r")) {
+    user_t.type = CMD;
+    strcpy(user_t.pathname, "clear");
+    printf("send cmd %s", user_t.pathname);
+    sendcmd(&user_t);
+    close(sock_fd);
+    return 0;
+  }
 
-  /* Read message from kernel */
-  recvmsg(sock_fd, &msg, 0);
-  printf("Received message payload: %s\n", (char *)NLMSG_DATA(nlh));
-  close(sock_fd);
+  if (!strcmp(argv[1], "-t")) {
+    user_t.type = CMD;
+    sprintf(user_t.pathname, "tar-%s", argv[2]);
+    printf("send cmd %s", user_t.pathname);
+    sendcmd(&user_t);
+    close(sock_fd);
+    return 0;
+  }
+
+  if (!strcmp(argv[1], "-c")) {
+    int file_size;
+    char *file_contents = getfile_content(&file_size);
+    json_process(file_contents, file_size);
+    close(sock_fd);
+    return 0;
+  }
+
+  return 0;
+  // printf("Waiting for message from kernel\n");
+
+  // /* Read message from kernel */
+  // recvmsg(sock_fd, &msg, 0);
+  // printf("Received message payload: %s\n", (char *)NLMSG_DATA(nlh));
+  // close(sock_fd);
 }
 
 void sendstruct(struct myuser *u) {
