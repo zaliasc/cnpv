@@ -3,6 +3,7 @@
 #include "types.h"
 
 MODULE_LICENSE("GPL");
+MODULE_AUTHOR("zhuzhicheng");
 MODULE_DESCRIPTION("Hook sys_call_open by change sys_open entry");
 
 extern int check_permission(const char *pathname, int oflag);
@@ -45,9 +46,8 @@ asmlinkage int my_open(const char __user *pathname, int flags, mode_t mode) {
   // printk("copied : %ld\n", copied);
   // printk("pathname : %s\n", user_msg);
 
-  printk("%s (pid=%d, comm=%s)\n", __func__, current->pid, current->comm);
-
   if (strstr(current->comm, target)) {
+    printk("%s (pid=%d, comm=%s)\n", __func__, current->pid, current->comm);
     if (check_permission(user_msg, flags) == 1) {
       printk("check path %s success", user_msg);
     } else
@@ -214,5 +214,3 @@ static void __exit cnpv_exit(void) {
 
 module_init(cnpv_init);
 module_exit(cnpv_exit);
-
-MODULE_LICENSE("GPL");
