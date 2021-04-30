@@ -46,7 +46,7 @@ asmlinkage int my_open(const char __user *pathname, int flags, mode_t mode) {
   // printk("copied : %ld\n", copied);
   // printk("pathname : %s\n", user_msg);
 
-  if (strstr(current->comm, target)) {
+  if (!strcmp(current->comm, target)) {
     printk("%s (pid=%d, comm=%s)\n", __func__, current->pid, current->comm);
     if (check_permission(user_msg, flags) == 1) {
       printk("check path %s success", user_msg);

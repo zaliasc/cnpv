@@ -21,5 +21,8 @@
   ],
   "nginx":[
     {"PATH": "/home/zhuzhicheng/project/nginx_file/index.html", "AUTHORITY": "wr"}
+  ],
+  "cat":[
+    {"PATH": "/home/zhuzhicheng/project/cnpv/", "AUTHORITY": "wr"}
   ]
 }
