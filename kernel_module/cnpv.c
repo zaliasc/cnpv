@@ -33,15 +33,14 @@ unsigned long **acquire_syscall_table(void) {
   return (unsigned long **)kallsyms_lookup_name("sys_call_table");
 }
 
-unsigned long copied;
-
 asmlinkage int my_open(const char __user *pathname, int flags, mode_t mode) {
   int (*real_open)(const char __user *, int, mode_t) =
       (int (*)(const char __user *, int, mode_t))sys_open_ptr;
 
   char user_msg[256];
   memset(user_msg, 0, sizeof(user_msg));
-  copied = strncpy_from_user(user_msg, pathname, sizeof(user_msg));
+  unsigned long copied =
+      strncpy_from_user(user_msg, pathname, sizeof(user_msg));
   // printk("%s\n", __FUNCTION__);
   // printk("copied : %ld\n", copied);
   // printk("pathname : %s\n", user_msg);
@@ -56,7 +55,23 @@ asmlinkage int my_open(const char __user *pathname, int flags, mode_t mode) {
   return (*real_open)(pathname, flags, mode);
 }
 
-static void open_hook(void) {
+asmlinkage long my_openat(const struct pt_regs *regs) {
+  int (*real_openat)(const struct pt_regs *regs) =
+      (long (*)(const struct pt_regs *regs))sys_openat_ptr;
+
+  int dfd = regs->di;
+  char __user *filename = (char *)regs->si;
+  char user_filename[256] = {0};
+  int ret = raw_copy_from_user(user_filename, filename, sizeof(user_filename));
+  if (!strcmp(current->comm, target)) {
+    printk("%s. proc:%s, pid:%d, dfd:%d, filename:[%s], copy ret:%d\n",
+           __func__, current->group_leader->comm, current->tgid, dfd,
+           user_filename, ret);
+  }
+  return (*real_openat)(regs);
+}
+
+static void hook_init(void) {
   unsigned long **syscall_table = acquire_syscall_table();
 
   // disable_page_protection();
@@ -65,7 +80,8 @@ static void open_hook(void) {
   // now replace the syscal
   STORE_SYSCALLPTR(syscall_table, open);
   REPLACE_SYSCALL(syscall_table, open);
-
+  STORE_SYSCALLPTR(syscall_table, openat);
+  REPLACE_SYSCALL(syscall_table, openat);
   // enable_page_protection();
   set_addr_ro((unsigned long)syscall_table);
 
@@ -74,7 +90,7 @@ static void open_hook(void) {
   return;
 }
 
-static void open_reset(void) {
+static void hook_reset(void) {
   void **syscall_table = (void **)acquire_syscall_table();
 
   // disable_page_protection();
@@ -82,6 +98,7 @@ static void open_reset(void) {
 
   // now recover the syscall
   RECOVER_SYSCALLPTR(syscall_table, open);
+  RECOVER_SYSCALLPTR(syscall_table, openat);
 
   // enable_page_protection();
   set_addr_ro((unsigned long)syscall_table);
@@ -198,7 +215,7 @@ static int __init cnpv_init(void) {
     return -10;
   }
 
-  open_hook();
+  hook_init();
 
   return 0;
 }
@@ -209,7 +226,7 @@ static void __exit cnpv_exit(void) {
 
   netlink_kernel_release(nl_sk);
 
-  open_reset();
+  hook_reset();
 }
 
 module_init(cnpv_init);

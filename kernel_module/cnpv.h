@@ -40,10 +40,12 @@
 
 void *sys_open_ptr;
 void *sys_openat_ptr;
+
 asmlinkage int
 my_open(const char __user *pathname, int flags, mode_t mode);
 
-unsigned long **
-acquire_syscall_table(void);
+asmlinkage long my_openat(const struct pt_regs *regs);
+
+unsigned long **acquire_syscall_table(void);
 
 #endif
