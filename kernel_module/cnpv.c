@@ -56,7 +56,7 @@ asmlinkage int my_open(const char __user *pathname, int flags, mode_t mode) {
 }
 
 asmlinkage long my_openat(const struct pt_regs *regs) {
-  int (*real_openat)(const struct pt_regs *regs) =
+  long (*real_openat)(const struct pt_regs *regs) =
       (long (*)(const struct pt_regs *regs))sys_openat_ptr;
 
   int dfd = regs->di;
