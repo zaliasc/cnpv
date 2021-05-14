@@ -55,21 +55,38 @@ asmlinkage int my_open(const char __user *pathname, int flags, mode_t mode) {
   return (*real_open)(pathname, flags, mode);
 }
 
-asmlinkage long my_openat(const struct pt_regs *regs) {
-  long (*real_openat)(const struct pt_regs *regs) =
-      (long (*)(const struct pt_regs *regs))sys_openat_ptr;
+asmlinkage long my_openat(int dfd, const char __user *filename, int flags,
+                          mode_t mode) {
+  long (*real_openat)(int dfd, const char __user *filename, int flags,
+                      mode_t mode) =
+      (long (*)(int dfd, const char __user *filename, int flags,
+                mode_t mode))sys_openat_ptr;
 
-  int dfd = regs->di;
-  char __user *filename = (char *)regs->si;
   char user_filename[256] = {0};
   int ret = raw_copy_from_user(user_filename, filename, sizeof(user_filename));
-  if (!strcmp(current->comm, target)) {
-    printk("%s. proc:%s, pid:%d, dfd:%d, filename:[%s], copy ret:%d\n",
-           __func__, current->group_leader->comm, current->tgid, dfd,
-           user_filename, ret);
-  }
-  return (*real_openat)(regs);
+  // if (!strcmp(current->comm, target)) {
+  printk("%s. proc:%s, pid:%d, dfd:%d, filename:[%s], copy ret:%d\n", __func__,
+         current->group_leader->comm, current->tgid, dfd, user_filename, ret);
+  // }
+  return (*real_openat)(dfd, filename, flags, mode);
 }
+
+// asmlinkage long my_openat(const struct pt_regs *regs) {
+//   long (*real_openat)(const struct pt_regs *) =
+//       (long (*)(const struct pt_regs *))sys_openat_ptr;
+
+//   int dfd = regs->di;
+//   char __user *filename = (char *)regs->si;
+//   char user_filename[256] = {0};
+//   int ret = raw_copy_from_user(user_filename, filename,
+//   sizeof(user_filename));
+//   // if (!strcmp(current->comm, target)) {
+//     printk("%s. proc:%s, pid:%d, dfd:%d, filename:[%s], copy ret:%d\n",
+//            __func__, current->group_leader->comm, current->tgid, dfd,
+//            user_filename, ret);
+//   // }
+//   return (*real_openat)(regs);
+// }
 
 static void hook_init(void) {
   unsigned long **syscall_table = acquire_syscall_table();
