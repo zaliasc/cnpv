@@ -63,33 +63,24 @@ asmlinkage long my_openat(int dfd, const char __user *filename, int flags,
       (long (*)(int dfd, const char __user *filename, int flags,
                 mode_t mode))sys_openat_ptr;
 
-  char user_filename[256] = {0};
-  int ret = raw_copy_from_user(user_filename, filename, sizeof(user_filename));
+  char user_msg[256];
+  memset(user_msg, 0, sizeof(user_msg));
+  unsigned long copied =
+      strncpy_from_user(user_msg, pathname, sizeof(user_msg));
 
-  char *tmp = (char *)__get_free_page(GFP_TEMPORARY);
-
-  file *file = fget(dfd);
-  if (!file) {
-    goto out
+  if (dfd == AT_FDCWD && !strcmp(current->comm, target)) {
+    printk("%s (pid=%d, comm=%s)\n", __func__, current->pid, current->comm);
+    if (check_permission(user_msg, flags) == 1) {
+      printk("check path %s success", user_msg);
+    } else
+      printk("check path %s failed", user_msg);
   }
-
-  char *path = d_path(&file->f_path, tmp, PAGE_SIZE);
-  if (IS_ERR(path)) {
-    printk("error: %d\n", (int)path);
-    goto out;
-  }
-
-  printk("path: %s\n", path);
 
   // if (!strcmp(current->comm, target)) {
-  printk("%s. proc:%s, pid:%d, dfd:%d, filename:[%s/%s], copy ret:%d\n", __func__,
-         current->group_leader->comm, current->tgid, dfd, path, user_filename, ret);
+  // printk("%s. proc:%s, pid:%d, dfd:%d, filename:[%s], copy ret:%d\n", __func__,
+  //        current->group_leader->comm, current->tgid, dfd, user_filename, ret);
   // }
   return (*real_openat)(dfd, filename, flags, mode);
-  
-out:
-  free_page((unsigned long)tmp);
-  return 0;
 }
 
 // kenel version > 4.17
