@@ -55,6 +55,7 @@ asmlinkage int my_open(const char __user *pathname, int flags, mode_t mode) {
   return (*real_open)(pathname, flags, mode);
 }
 
+// kernel version 4.15
 asmlinkage long my_openat(int dfd, const char __user *filename, int flags,
                           mode_t mode) {
   long (*real_openat)(int dfd, const char __user *filename, int flags,
@@ -64,13 +65,34 @@ asmlinkage long my_openat(int dfd, const char __user *filename, int flags,
 
   char user_filename[256] = {0};
   int ret = raw_copy_from_user(user_filename, filename, sizeof(user_filename));
+
+  char *tmp = (char *)__get_free_page(GFP_TEMPORARY);
+
+  file *file = fget(dfd);
+  if (!file) {
+    goto out
+  }
+
+  char *path = d_path(&file->f_path, tmp, PAGE_SIZE);
+  if (IS_ERR(path)) {
+    printk("error: %d\n", (int)path);
+    goto out;
+  }
+
+  printk("path: %s\n", path);
+
   // if (!strcmp(current->comm, target)) {
-  printk("%s. proc:%s, pid:%d, dfd:%d, filename:[%s], copy ret:%d\n", __func__,
-         current->group_leader->comm, current->tgid, dfd, user_filename, ret);
+  printk("%s. proc:%s, pid:%d, dfd:%d, filename:[%s/%s], copy ret:%d\n", __func__,
+         current->group_leader->comm, current->tgid, dfd, path, user_filename, ret);
   // }
   return (*real_openat)(dfd, filename, flags, mode);
+  
+out:
+  free_page((unsigned long)tmp);
+  return 0;
 }
 
+// kenel version > 4.17
 // asmlinkage long my_openat(const struct pt_regs *regs) {
 //   long (*real_openat)(const struct pt_regs *) =
 //       (long (*)(const struct pt_regs *))sys_openat_ptr;

@@ -46,6 +46,7 @@ my_open(const char __user *pathname, int flags, mode_t mode);
 
 // asmlinkage long my_openat(const struct pt_regs *regs);
 
+// kernel version 4.15
 asmlinkage long
 my_openat(int dfd, const char __user *filename, int flags,
           mode_t mode);
