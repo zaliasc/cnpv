@@ -20,7 +20,7 @@
     {"PATH": "/home/zhuzhicheng/project/cnpv/perf_test/flame.sh", "AUTHORITY": "wr"}
   ],
   "nginx":[
-    {"PATH": "/home/zhuzhicheng/project/nginx_file/index.html", "AUTHORITY": "wr"}
+    {"PATH": "/var/www/html/index.nginx-debian.html", "AUTHORITY": "wr"}
   ],
   "cat":[
     {"PATH": "/home/zhuzhicheng/project/cnpv/", "AUTHORITY": "wr"}
