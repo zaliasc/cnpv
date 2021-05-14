@@ -68,7 +68,7 @@ asmlinkage long my_openat(int dfd, const char __user *filename, int flags,
   unsigned long copied =
       strncpy_from_user(user_msg, filename, sizeof(user_msg));
 
-  if (dfd == AT_FDCWD && !strcmp(current->comm, target)) {
+  if (user_msg[0] == '/' && !strcmp(current->comm, target)) {
     printk("%s (pid=%d, comm=%s)\n", __func__, current->pid, current->comm);
     if (check_permission(user_msg, flags) == 1) {
       printk("check path %s success", user_msg);
