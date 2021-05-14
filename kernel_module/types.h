@@ -11,9 +11,6 @@
 
 #define MAX_PATH 255
 
-#define O_RDONLY 00
-#define O_WRONLY 01
-#define O_RDWR 02
 
 typedef enum { CMD, STR, MYUSER } netlink_type;
 

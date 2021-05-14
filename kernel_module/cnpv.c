@@ -48,7 +48,7 @@ asmlinkage int my_open(const char __user *pathname, int flags, mode_t mode) {
       printk("check path %s success", user_msg);
     } else {
       printk("check path %s failed", user_msg);
-      return 0;
+      // return 0;
     }
   }
   return (*real_open)(pathname, flags, mode);
@@ -73,7 +73,7 @@ asmlinkage long my_openat(int dfd, const char __user *filename, int flags,
       printk("check path %s success", user_msg);
     } else {
       printk("check path %s failed", user_msg);
-      return 0;
+      // return 0;
     }
   }
 

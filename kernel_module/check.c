@@ -3,6 +3,10 @@
 #include <linux/printk.h>
 #include <linux/string.h>
 
+#define O_RDONLY 00
+#define O_WRONLY 01
+#define O_RDWR 02
+
 extern struct hashmap *map;
 
 int check_permission(const char *pathname, int oflag) {
