@@ -26,15 +26,15 @@ int check_permission(const char *pathname, int oflag) {
   printk("pathname : %s , permission: %d  oflag: %d", pathname, permission,
          oflag);
 
-  return 1;
+  // return 1;
 
-  // if (permission & O_FORBIDDEN)
-  //   ret = false;
-  // else if ((oflag & 0x03) == O_RDONLY)
-  //   ret = !!(permission & O_READ);
-  // else if ((oflag & 0x03) == O_WRONLY)
-  //   ret = !!(permission & O_WRITE);
-  // else if ((oflag & 0x03) == O_RDWR)
-  //   ret = (!!(permission & O_READ)) && (!!(permission & O_WRITE));
-  // return ret;
+  if (permission & O_FORBIDDEN)
+    ret = false;
+  else if ((oflag & 0x03) == O_RDONLY)
+    ret = !!(permission & O_READ);
+  else if ((oflag & 0x03) == O_WRONLY)
+    ret = !!(permission & O_WRITE);
+  else if ((oflag & 0x03) == O_RDWR)
+    ret = (!!(permission & O_READ)) && (!!(permission & O_WRITE));
+  return ret;
 }

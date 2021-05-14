@@ -41,9 +41,6 @@ asmlinkage int my_open(const char __user *pathname, int flags, mode_t mode) {
   memset(user_msg, 0, sizeof(user_msg));
   unsigned long copied =
       strncpy_from_user(user_msg, pathname, sizeof(user_msg));
-  // printk("%s\n", __FUNCTION__);
-  // printk("copied : %ld\n", copied);
-  // printk("pathname : %s\n", user_msg);
 
   if (!strcmp(current->comm, target)) {
     printk("%s (pid=%d, comm=%s)\n", __func__, current->pid, current->comm);
@@ -51,6 +48,7 @@ asmlinkage int my_open(const char __user *pathname, int flags, mode_t mode) {
       printk("check path %s success", user_msg);
     } else
       printk("check path %s failed", user_msg);
+      return 0;
   }
   return (*real_open)(pathname, flags, mode);
 }
@@ -74,12 +72,11 @@ asmlinkage long my_openat(int dfd, const char __user *filename, int flags,
       printk("check path %s success", user_msg);
     } else
       printk("check path %s failed", user_msg);
+      return 0;
   }
 
-  // if (!strcmp(current->comm, target)) {
   // printk("%s. proc:%s, pid:%d, dfd:%d, filename:[%s], copy ret:%d\n", __func__,
   //        current->group_leader->comm, current->tgid, dfd, user_filename, ret);
-  // }
   return (*real_openat)(dfd, filename, flags, mode);
 }
 
