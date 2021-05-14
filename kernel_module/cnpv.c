@@ -46,9 +46,10 @@ asmlinkage int my_open(const char __user *pathname, int flags, mode_t mode) {
     printk("%s (pid=%d, comm=%s)\n", __func__, current->pid, current->comm);
     if (check_permission(user_msg, flags) == 1) {
       printk("check path %s success", user_msg);
-    } else
+    } else {
       printk("check path %s failed", user_msg);
       return 0;
+    }
   }
   return (*real_open)(pathname, flags, mode);
 }
@@ -70,9 +71,10 @@ asmlinkage long my_openat(int dfd, const char __user *filename, int flags,
     printk("%s (pid=%d, comm=%s)\n", __func__, current->pid, current->comm);
     if (check_permission(user_msg, flags) == 1) {
       printk("check path %s success", user_msg);
-    } else
+    } else {
       printk("check path %s failed", user_msg);
       return 0;
+    }
   }
 
   // printk("%s. proc:%s, pid:%d, dfd:%d, filename:[%s], copy ret:%d\n", __func__,

@@ -26,7 +26,7 @@ int check_permission(const char *pathname, int oflag) {
   printk("pathname : %s , permission: %d  oflag: %d", pathname, permission,
          oflag);
 
-  // return 1;
+  int ret = 1;
 
   if (permission & O_FORBIDDEN)
     ret = false;
