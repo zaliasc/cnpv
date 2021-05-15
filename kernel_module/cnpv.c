@@ -2,14 +2,6 @@
 #include "map.h"
 #include "types.h"
 
-#define DEBUG
-
-#ifdef DEBUG
-#define printk_debug(fmt, ...) printk(fmt, ...)
-#else
-#define printk_debug()
-#endif
-
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("zhuzhicheng");
 MODULE_DESCRIPTION("Hook sys_call_open by change sys_open entry");
@@ -51,7 +43,8 @@ asmlinkage int my_open(const char __user *pathname, int flags, mode_t mode) {
       strncpy_from_user(user_msg, pathname, sizeof(user_msg));
 
   if (!strcmp(current->comm, target)) {
-    printk_debug("%s (pid=%d, comm=%s)\n", __func__, current->pid, current->comm);
+    printk_debug("%s (pid=%d, comm=%s)\n", __func__, current->pid,
+                 current->comm);
     if (check_permission(user_msg, flags) == 1) {
       printk_debug("check path %s success", user_msg);
     } else {
@@ -76,7 +69,8 @@ asmlinkage long my_openat(int dfd, const char __user *filename, int flags,
       strncpy_from_user(user_msg, filename, sizeof(user_msg));
 
   if (user_msg[0] == '/' && !strcmp(current->comm, target)) {
-    printk_debug("%s (pid=%d, comm=%s)\n", __func__, current->pid, current->comm);
+    printk_debug("%s (pid=%d, comm=%s)\n", __func__, current->pid,
+                 current->comm);
     if (check_permission(user_msg, flags) == 1) {
       printk_debug("check path %s success", user_msg);
     } else {
@@ -85,8 +79,10 @@ asmlinkage long my_openat(int dfd, const char __user *filename, int flags,
     }
   }
 
-  // printk_debug("%s. proc:%s, pid:%d, dfd:%d, filename:[%s], copy ret:%d\n", __func__,
-  //        current->group_leader->comm, current->tgid, dfd, user_filename, ret);
+  // printk_debug("%s. proc:%s, pid:%d, dfd:%d, filename:[%s], copy ret:%d\n",
+  // __func__,
+  //        current->group_leader->comm, current->tgid, dfd, user_filename,
+  //        ret);
   return (*real_openat)(dfd, filename, flags, mode);
 }
 
