@@ -15,7 +15,7 @@
     {"PATH": "/home/zhuzhicheng/project/cnpv/perf_test/test.c", "AUTHORITY": "wr"},
     {"PATH": "/home/zhuzhicheng/project/cnpv/perf_test/", "AUTHORITY": "wr"}
   ],  
-  "app-test":[
+  "app-kernel":[
     {"PATH": "/home/zhuzhicheng/project/cnpv/perf_test/test.c", "AUTHORITY": "wr"},
     {"PATH": "/home/zhuzhicheng/project/cnpv/perf_test/flame.sh", "AUTHORITY": "wr"}
   ],
