@@ -29,7 +29,7 @@ struct mapuser {
 #ifdef DEBUG
 #define printk_debug(fmt, ...) printk(fmt, ##__VA_ARGS__)
 #else
-#define printk_debug()
+#define printk_debug(fmt, ...)
 #endif
 
 #endif /* TYPES_H */
