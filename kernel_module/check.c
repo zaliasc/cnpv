@@ -27,7 +27,7 @@ int check_permission(const char *pathname, int oflag) {
 
   permission = user->permission;
 
-  printk("pathname : %s , permission: %d  oflag: %d", pathname, permission,
+  printk_debug("pathname : %s , permission: %d  oflag: %d", pathname, permission,
          oflag);
 
   int ret = 1;
