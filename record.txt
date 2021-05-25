@@ -1,0 +1,7 @@
+[  +2.840254] Entering: cnpv_init
+[  +0.008519] starting intercept
+[  +8.267986] set tar: nginx
+[  +0.000952] Netlink received msg payload:path: /var/www/html/index.nginx-debian.html
+              , permission: 72
+[  +0.000008] hash map count : 1
+
